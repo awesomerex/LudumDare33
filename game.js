@@ -11,6 +11,11 @@ var manifest = {
 	"fonts": {
 	},
 	"animations": {
+		"roadFourWay": {
+			"strip": "assets/images/Road_FourWay.png",
+			"frames": 1,
+			"msPerFrame": 100
+		}
 	}
 };
 
@@ -36,7 +41,9 @@ function centerText(context, text, offsetX, offsetY) {
 game.scenes.add("title", new Splat.Scene(canvas, function() {
 	// initialization
 	var scene = this;
-	
+
+	var fourWayRoad = game.animations.get("roadFourWay");
+	scene.road = new Splat.AnimatedEntity(0,0, canvas.width, canvas.height, fourWayRoad, 0, 0);
 	scene.camera = new Splat.Camera(0, 0, canvas.width, canvas.height);
 	scene.drawables = [];
 	scene.player = new Splat.Entity(canvas.width/2, canvas.height/2, 50, 50);
@@ -89,6 +96,8 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
 	for (var x = 0 ; x < this.drawables.length; x ++){
 		drawBuilding(context, this.drawables[x]);
 	}
+
+	this.road.draw(context);
 
 	drawPlayer(context, this.player);
 
