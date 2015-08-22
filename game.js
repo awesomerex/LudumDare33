@@ -6,18 +6,6 @@ var canvas = document.getElementById("canvas");
 var manifest = require("./manifest.json");
 var game = new Splat.Game(canvas, manifest);
 
-
-// function drawPlayer(context, drawable){
-// 	context.fillStyle = drawable.color;
-// 	context.fillRect(drawable.x, drawable.y, drawable.height, drawable.width);
-// }
-
-// function drawBuilding(context, drawable){
-// 	context.fillStyle = drawable.color;
-// 	context.fillRect(drawable.x, drawable.y, drawable.height, drawable.width);
-// }
-
-
 function centerText(context, text, offsetX, offsetY) {
 	var w = context.measureText(text).width;
 	var x = offsetX + (canvas.width / 2) - (w / 2) | 0;
@@ -30,6 +18,8 @@ function generateBuilding(x, y, width, height, buildingNumber, offsetx, offsety)
 	var sprite2 = game.animations.get("building"+buildingNumber+"_2");
 	var sprite3 = game.animations.get("building"+buildingNumber+"_3");
 	var entity = new Splat.AnimatedEntity(x,y, width, height, sprite, offsetx, offsety);
+  entity.building = true;
+  entity.vulnerable = true;
 	entity.sprite1 = sprite;
 	entity.sprite2 = sprite2;
 	entity.sprite3 = sprite3;
@@ -112,6 +102,33 @@ game.playerTest =game.animations.get("playerTest");
     }
   };
 
+  function notVulnerable(building) {
+    building.vulnerable = false;
+  }
+
+  function isVulnerable(building) {
+    building.vulnerable = true;
+  }
+
+  function destruction(building) {
+   
+   // building.sprite = game.playerTest;
+   // building.hit();
+   console.log(building);
+   var destroyTimer = new Splat.Timer(notVulnerable, 3000, isVulnerable);
+   destroyTimer.start();
+  }
+
+  scene.destroyBuilding = function (obstacle) {
+    if (obstacle.building === true) {
+      if (obstacle.vulnerable) {
+        console.log("getting a big hit");
+        obstacle.hit();
+        destruction();
+      }
+    }
+  };
+
 
     
 
@@ -162,23 +179,27 @@ game.playerTest =game.animations.get("playerTest");
 	this.player.move(elapsedMillis);
 	//collision detection
 	for (var x = 0; x < this.obstacles.length; x++){
-		if(this.player.collides(this.obstacles[x])){
+    this.obstacles[x].hit();
+    var obstacle = this.obstacles[x];
+
+		if(this.player.collides(obstacle)){
 			console.log("colliding");
 
-			if (this.obstacles[x].wasLeft(this.player)) {
-			  this.player.x = this.obstacles[x].x + this.obstacles[x].width;
-      		}
+			if (obstacle.wasLeft(this.player)) {
+			  this.player.x = obstacle.x + obstacle.width;
+        this.destroyBuilding(obstacle);
+      }
 
-			if (this.obstacles[x].wasRight(this.player)) {
-				this.player.x = this.obstacles[x].x-this.player.width;
+			if (obstacle.wasRight(this.player)) {
+				this.player.x = obstacle.x-this.player.width;
 			}
       
-			if (this.obstacles[x].wasAbove(this.player)) {
-			  this.player.y = this.obstacles[x].y + this.obstacles[x].height;
+			if (obstacle.wasAbove(this.player)) {
+			  this.player.y = obstacle.y + obstacle.height;
       		}
 		  
-      		if (this.obstacles[x].wasBelow(this.player)) {
-				this.player.y = this.obstacles[x].y - this.player.height;
+      		if (obstacle.wasBelow(this.player)) {
+				this.player.y = obstacle.y - this.player.height;
 			}
 		}
 	} 
