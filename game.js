@@ -70,6 +70,10 @@ game.rightArrow = game.animations.get("rightArrow");
 game.upArrow = game.animations.get("upArrow");
 game.downArrow = game.animations.get("downArrow");
 game.playerTest =game.animations.get("playerTest");
+game.playerUp = game.animations.get("playerUp");
+game.playerDown = game.animations.get("playerDown");
+game.playerLeft = game.animations.get("playerLeft");
+game.playerRight = game.animations.get("playerRight");
 
 	scene.road = new Splat.AnimatedEntity(0,0, canvas.width, canvas.height, fourWayRoad, 0, 0);
 	scene.obstacles = [];
@@ -83,16 +87,16 @@ game.playerTest =game.animations.get("playerTest");
     scene.player.attacking = true;
     
     if (direction === "up") {
-      scene.player.sprite = game.playerTest;
+      scene.player.sprite = game.playerUp;
     }
     if (direction === "down") {
-      scene.player.sprite = game.playerTest;
+      scene.player.sprite = game.playerDown;
     }
     if (direction === "left") {
-      scene.player.sprite = game.playerTest;
+      scene.player.sprite = game.playerLeft;
     }
     if (direction === "right") {
-      scene.player.sprite = game.playerTest;
+      scene.player.sprite = game.playerRight;
     }
   };
 
@@ -100,16 +104,16 @@ game.playerTest =game.animations.get("playerTest");
     var direction = scene.player.direction;
    	scene.player.attacking = false;
     if (direction === "up") {
-      scene.player.sprite = game.upArrow;
+      scene.player.sprite = game.playerUp;
     }
     if (direction === "down") {
-      scene.player.sprite = game.downArrow;
+      scene.player.sprite = game.playerDown;
     }
     if (direction === "left") {
-      scene.player.sprite = game.leftArrow;
+      scene.player.sprite = game.playerLeft;
     }
     if (direction === "right") {
-      scene.player.sprite = game.rightArrow;
+      scene.player.sprite = game.playerRight;
     }
   };
 
@@ -141,22 +145,22 @@ game.playerTest =game.animations.get("playerTest");
   }  
 	if (game.keyboard.isPressed("left")) {
 		this.player.vx -= 0.1;
-    this.player.sprite = game.leftArrow;
+    this.player.sprite = game.playerLeft;
     this.player.direction = "left";
 	}
 	if (game.keyboard.isPressed("right")) {
 		this.player.vx += 0.1;
-    this.player.sprite = game.rightArrow;
+    this.player.sprite = game.playerRight;
     this.player.direction = "right";
 	}
 	if (game.keyboard.isPressed("up")) {
 		this.player.vy -= 0.1;
-    this.player.sprite = game.upArrow;
+    this.player.sprite = game.playerUp;
     this.player.direction = "up";
 	}
 	if (game.keyboard.isPressed("down")) {
 		this.player.vy += 0.1;
-    this.player.sprite = game.downArrow;
+    this.player.sprite = game.playerDown;
     this.player.direction = "down";
 	}
 
