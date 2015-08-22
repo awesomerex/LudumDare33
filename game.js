@@ -7,11 +7,6 @@ var manifest = require("./manifest.json");
 
 var game = new Splat.Game(canvas, manifest);
 
-// function drawPlayer(context, drawable){
-// 	context.fillStyle = drawable.color;
-// 	context.fillRect(drawable.x, drawable.y, drawable.height, drawable.width);
-// }
-
 function drawBuilding(context, drawable){
 	context.fillStyle = drawable.color;
 	context.fillRect(drawable.x, drawable.y, drawable.height, drawable.width);
@@ -63,15 +58,19 @@ game.downArrow = game.animations.get("downArrow");
 
 	if (game.keyboard.isPressed("left")) {
 		this.player.vx -= 0.1;
+    this.player.sprite = game.leftArrow;
 	}
 	if (game.keyboard.isPressed("right")) {
 		this.player.vx += 0.1;
+    this.player.sprite = game.rightArrow;
 	}
 	if (game.keyboard.isPressed("up")) {
 		this.player.vy -= 0.1;
+    this.player.sprite = game.upArrow;
 	}
 	if (game.keyboard.isPressed("down")) {
 		this.player.vy += 0.1;
+    this.player.sprite = game.downArrow;
 	}
 
 	this.player.move(elapsedMillis);
