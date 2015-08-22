@@ -6,18 +6,6 @@ var canvas = document.getElementById("canvas");
 var manifest = require("./manifest.json");
 var game = new Splat.Game(canvas, manifest);
 
-
-// function drawPlayer(context, drawable){
-// 	context.fillStyle = drawable.color;
-// 	context.fillRect(drawable.x, drawable.y, drawable.height, drawable.width);
-// }
-
-// function drawBuilding(context, drawable){
-// 	context.fillStyle = drawable.color;
-// 	context.fillRect(drawable.x, drawable.y, drawable.height, drawable.width);
-// }
-
-
 function centerText(context, text, offsetX, offsetY) {
 	var w = context.measureText(text).width;
 	var x = offsetX + (canvas.width / 2) - (w / 2) | 0;
@@ -30,6 +18,8 @@ function generateBuilding(x, y, width, height, buildingNumber, offsetx, offsety)
 	var sprite2 = game.animations.get("building"+buildingNumber+"_2");
 	var sprite3 = game.animations.get("building"+buildingNumber+"_3");
 	var entity = new Splat.AnimatedEntity(x,y, width, height, sprite, offsetx, offsety);
+  entity.building = true;
+  entity.vulnerable = true;
 	entity.sprite1 = sprite;
 	entity.sprite2 = sprite2;
 	entity.sprite3 = sprite3;
@@ -38,7 +28,6 @@ function generateBuilding(x, y, width, height, buildingNumber, offsetx, offsety)
 		if(entity.state < 4){
 			entity.state ++;
 			console.log("hit");
-			game.sounds.play("gruntSmash");
 		}
 		switch (entity.state){
 			case 1:
@@ -50,11 +39,29 @@ function generateBuilding(x, y, width, height, buildingNumber, offsetx, offsety)
 			case 3:
 				entity.sprite = entity.sprite3;
 				break;
-			default:
-				entity.sprite = entity.sprite2;
-				break;
 		}
 	};
+
+  entity.destruction = function () {
+      function notVulnerable() {
+        entity.vulnerable = false;
+      }
+
+      function isVulnerable() {
+        entity.vulnerable= true;
+      }
+      
+      if (entity.building === true && game.player.attacking) {
+        if (entity.vulnerable) {
+          console.log("its vulnerable " + entity);
+          entity.hit();
+          var destroyTimer = new Splat.Timer(notVulnerable(entity), 10000, isVulnerable(entity));
+          destroyTimer.start();
+        }
+      }
+    };
+
+
 
 	return entity;
 }
@@ -81,6 +88,7 @@ game.playerRight = game.animations.get("playerRight");
 	scene.player = new Splat.AnimatedEntity(canvas.width/2, canvas.height/2, 32, 32, game.playerTest, 0, -32);
   scene.player.direction = "up"; 
   scene.player.attacking = false;
+  game.player = scene.player;
 
   scene.attack = function () {
     var direction = scene.player.direction;
@@ -167,24 +175,29 @@ game.playerRight = game.animations.get("playerRight");
 	this.player.move(elapsedMillis);
 	//collision detection
 	for (var x = 0; x < this.obstacles.length; x++){
-		if(this.player.collides(this.obstacles[x])){
+    var obstacle = this.obstacles[x];
+
+		if(this.player.collides(obstacle)){
 			console.log("colliding");
-			this.obstacles[x].hit();
 
-			if (this.obstacles[x].wasLeft(this.player)) {
-			  this.player.x = this.obstacles[x].x + this.obstacles[x].width;
-      		}
+			if (obstacle.wasLeft(this.player)) {
+			  this.player.x = obstacle.x + obstacle.width;
+        obstacle.destruction();
+      }
 
-			if (this.obstacles[x].wasRight(this.player)) {
-				this.player.x = this.obstacles[x].x-this.player.width;
+			if (obstacle.wasRight(this.player)) {
+				this.player.x = obstacle.x - this.player.width;
+        obstacle.destruction();
 			}
       
-			if (this.obstacles[x].wasAbove(this.player)) {
-			  this.player.y = this.obstacles[x].y + this.obstacles[x].height;
+			if (obstacle.wasAbove(this.player)) {
+			  this.player.y = obstacle.y + obstacle.height;
+        obstacle.destruction();
       		}
 		  
-      		if (this.obstacles[x].wasBelow(this.player)) {
-				this.player.y = this.obstacles[x].y - this.player.height;
+      		if (obstacle.wasBelow(this.player)) {
+				this.player.y = obstacle.y - this.player.height;
+        obstacle.destruction();
 			}
 		}
 	} 
