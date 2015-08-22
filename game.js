@@ -115,7 +115,6 @@ game.downArrow = game.animations.get("downArrow");
 	}
 	if (game.keyboard.isPressed("down")) {
 		this.player.vy += 0.1;
->>>>>>> 9c3c50228b0b9625ac060a88bb543748a857bf3e
 	}
 
 	this.player.move(elapsedMillis);
