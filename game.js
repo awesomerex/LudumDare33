@@ -37,10 +37,10 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
 
 
 	var fourWayRoad = game.animations.get("roadFourWay");
-game.leftArrow = game.animations.get("playerTest");
-game.rightArrow = game.animations.get("playerTest");
-game.upArrow = game.animations.get("playerTest");
-game.downArrow = game.animations.get("playerTest");
+game.leftArrow = game.animations.get("leftArrow");
+game.rightArrow = game.animations.get("rightArrow");
+game.upArrow = game.animations.get("upArrow");
+game.downArrow = game.animations.get("downArrow");
 game.playerTest =game.animations.get("playerTest");
 
 	scene.road = new Splat.AnimatedEntity(0,0, canvas.width, canvas.height, fourWayRoad, 0, 0);
@@ -48,23 +48,45 @@ game.playerTest =game.animations.get("playerTest");
 	scene.drawables = [];
 	scene.player = new Splat.AnimatedEntity(canvas.width/2, canvas.height/2, 32, 32, game.playerTest, 0, -32);
   scene.player.direction = "up"; 
+  scene.player.attacking = false;
 
   scene.attack = function () {
     var direction = scene.player.direction;
-  
+    scene.player.attacking = true;
+    
     if (direction === "up") {
-      scene.player.sprite = undefined;
+      scene.player.sprite = game.playerTest;
     }
     if (direction === "down") {
-      scene.player.sprite = undefined;
+      scene.player.sprite = game.playerTest;
     }
     if (direction === "left") {
-      scene.player.sprite = undefined;
+      scene.player.sprite = game.playerTest;
     }
     if (direction === "right") {
-      scene.player.sprite = undefined;
+      scene.player.sprite = game.playerTest;
     }
   };
+
+  scene.notAttack = function () {
+    var direction = scene.player.direction;
+   
+    if (direction === "up") {
+      scene.player.sprite = game.upArrow;
+    }
+    if (direction === "down") {
+      scene.player.sprite = game.downArrow;
+    }
+    if (direction === "left") {
+      scene.player.sprite = game.leftArrow;
+    }
+    if (direction === "right") {
+      scene.player.sprite = game.rightArrow;
+    }
+  };
+
+
+    
 
 	scene.camera = new Splat.EntityBoxCamera(scene.player, 32, 32, canvas.width/2, canvas.height/2);
 
@@ -94,7 +116,9 @@ game.playerTest =game.animations.get("playerTest");
 
   if (game.keyboard.isPressed("space")) {
     this.attack();
-  }
+  } else {
+    this.notAttack();
+  }  
 	if (game.keyboard.isPressed("left")) {
 		this.player.vx -= 0.1;
     this.player.sprite = game.leftArrow;
