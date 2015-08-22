@@ -1,5 +1,4 @@
 {
-
 	"images": {
 	},
 
@@ -35,7 +34,6 @@
 	      "msPerFrame": 100,
 	      "flip": "vertical"
 	    },
-	    
 		"roadFourWay": {
 			"strip": "assets/images/Road_FourWay.png",
 			"frames": 1,
@@ -71,7 +69,7 @@
 			"frames": 1,
 			"msPerFrame": 100
 		},
-		"playerTest": {
+		"snaps": {
 	    	"strip": "assets/images/playerTest_tall.png",
 	    	"frames": 1,
 	    	"msPerFrame": 100
