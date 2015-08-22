@@ -28,7 +28,6 @@ function generateBuilding(x, y, width, height, buildingNumber, offsetx, offsety)
 		if(entity.state < 4){
 			entity.state ++;
 			console.log("hit");
-			game.sounds.play("gruntSmash");
 		}
 		switch (entity.state){
 			case 1:
@@ -40,11 +39,29 @@ function generateBuilding(x, y, width, height, buildingNumber, offsetx, offsety)
 			case 3:
 				entity.sprite = entity.sprite3;
 				break;
-			default:
-				entity.sprite = entity.sprite2;
-				break;
 		}
 	};
+
+  entity.destruction = function () {
+      function notVulnerable() {
+        entity.vulnerable = false;
+      }
+
+      function isVulnerable() {
+        entity.vulnerable= true;
+      }
+      
+      if (entity.building === true && game.player.attacking) {
+        if (entity.vulnerable) {
+          console.log("its vulnerable " + entity);
+          entity.hit();
+          var destroyTimer = new Splat.Timer(notVulnerable(entity), 10000, isVulnerable(entity));
+          destroyTimer.start();
+        }
+      }
+    };
+
+
 
 	return entity;
 }
@@ -67,6 +84,7 @@ game.playerTest =game.animations.get("playerTest");
 	scene.player = new Splat.AnimatedEntity(canvas.width/2, canvas.height/2, 32, 32, game.playerTest, 0, -32);
   scene.player.direction = "up"; 
   scene.player.attacking = false;
+  game.player = scene.player;
 
   scene.attack = function () {
     var direction = scene.player.direction;
@@ -100,33 +118,6 @@ game.playerTest =game.animations.get("playerTest");
     }
     if (direction === "right") {
       scene.player.sprite = game.rightArrow;
-    }
-  };
-
-  function notVulnerable(building) {
-    building.vulnerable = false;
-  }
-
-  function isVulnerable(building) {
-    building.vulnerable = true;
-  }
-
-  function destruction(building) {
-   
-   // building.sprite = game.playerTest;
-   // building.hit();
-   console.log(building);
-   var destroyTimer = new Splat.Timer(notVulnerable, 3000, isVulnerable);
-   destroyTimer.start();
-  }
-
-  scene.destroyBuilding = function (obstacle) {
-    if (obstacle.building === true) {
-      if (obstacle.vulnerable) {
-        console.log("getting a big hit");
-        obstacle.hit();
-        destruction();
-      }
     }
   };
 
@@ -180,28 +171,29 @@ game.playerTest =game.animations.get("playerTest");
 	this.player.move(elapsedMillis);
 	//collision detection
 	for (var x = 0; x < this.obstacles.length; x++){
-    this.obstacles[x].hit();
     var obstacle = this.obstacles[x];
 
 		if(this.player.collides(obstacle)){
 			console.log("colliding");
-			this.obstacles[x].hit();
 
 			if (obstacle.wasLeft(this.player)) {
 			  this.player.x = obstacle.x + obstacle.width;
-        this.destroyBuilding(obstacle);
+        obstacle.destruction();
       }
 
 			if (obstacle.wasRight(this.player)) {
-				this.player.x = obstacle.x-this.player.width;
+				this.player.x = obstacle.x - this.player.width;
+        obstacle.destruction();
 			}
       
 			if (obstacle.wasAbove(this.player)) {
 			  this.player.y = obstacle.y + obstacle.height;
+        obstacle.destruction();
       		}
 		  
       		if (obstacle.wasBelow(this.player)) {
 				this.player.y = obstacle.y - this.player.height;
+        obstacle.destruction();
 			}
 		}
 	} 
