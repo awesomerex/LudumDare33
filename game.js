@@ -44,24 +44,25 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
 
 	var fourWayRoad = game.animations.get("roadFourWay");
 	scene.road = new Splat.AnimatedEntity(0,0, canvas.width, canvas.height, fourWayRoad, 0, 0);
-	scene.camera = new Splat.Camera(0, 0, canvas.width, canvas.height);
 	scene.drawables = [];
-	scene.player = new Splat.Entity(canvas.width/2, canvas.height/2, 50, 50);
+	scene.player = new Splat.Entity(canvas.width/2, canvas.height/2, 32, 32);
 	scene.player.color = "red";
 
-	var building = new Splat.Entity(100, 100, 100, 100);
+	scene.camera = new Splat.EntityBoxCamera(scene.player, 32, 32, canvas.width/2, canvas.height/2);
+
+	var building = new Splat.Entity(100, 100, 32, 32);
 	building.color = "blue";
 	scene.drawables.push(building);
 
-	building = new Splat.Entity(100, 300, 100, 100);
+	building = new Splat.Entity(100, 164, 32, 32);
 	building.color = "blue";
 	scene.drawables.push(building);
 
-	scene.building3 = new Splat.Entity(300, 100, 100, 100);
+	scene.building3 = new Splat.Entity(164, 100, 32, 32);
 	scene.building3.color = "blue";
 	scene.drawables.push(scene.building3);
 
-	scene.building4 = new Splat.Entity(300, 300, 100, 100);
+	scene.building4 = new Splat.Entity(164, 164, 32, 32);
 	scene.building4.color = "blue";
 	scene.drawables.push(scene.building4);
 
@@ -83,6 +84,13 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
 		this.player.y += 1;
 		this.camera.y += 1;
 	}
+	//collision detection
+	for (var x = 0; x < this.drawables.length; x++){
+		if(this.drawables[x].collides(this.player)){
+			this.player.resolveCollisionWith(this.drawables[x]);
+		}
+	}
+	
 
 }, function(context) {
 	// draw
