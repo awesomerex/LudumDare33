@@ -70,7 +70,12 @@
 			"strip": "assets/images/Building2_3.png",
 			"frames": 1,
 			"msPerFrame": 100
-		}
+		},
+		"playerTest": {
+	    	"strip": "assets/images/playerTest_tall.png",
+	    	"frames": 1,
+	    	"msPerFrame": 100
+	    },
 	}
 };
 

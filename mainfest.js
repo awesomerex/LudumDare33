@@ -1,4 +1,4 @@
-var manifest = {
+{
 	"images": {
 	},
 
@@ -34,7 +34,6 @@ var manifest = {
 	      "msPerFrame": 100,
 	      "flip": "vertical"
 	    },
-	    
 		"roadFourWay": {
 			"strip": "assets/images/Road_FourWay.png",
 			"frames": 1,
@@ -69,7 +68,12 @@ var manifest = {
 			"strip": "assets/images/Building2_3.png",
 			"frames": 1,
 			"msPerFrame": 100
-		}
+		},
+		"snaps": {
+	    	"strip": "assets/images/playerTest_tall.png",
+	    	"frames": 1,
+	    	"msPerFrame": 100
+	    },
 	}
 };
 
