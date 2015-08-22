@@ -45,6 +45,7 @@ game.playerTest =game.animations.get("playerTest");
 
 	scene.road = new Splat.AnimatedEntity(0,0, canvas.width, canvas.height, fourWayRoad, 0, 0);
 	scene.obstacles = [];
+	scene.drawables = [];
 	scene.player = new Splat.AnimatedEntity(canvas.width/2, canvas.height/2, 32, 32, game.playerTest, 0, -32);
   scene.player.direction = "up"; 
 
