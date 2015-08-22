@@ -33,6 +33,27 @@ function generateBuilding(x, y, width, height, buildingNumber, offsetx, offsety)
 	entity.sprite1 = sprite;
 	entity.sprite2 = sprite2;
 	entity.sprite3 = sprite3;
+	entity.state = 1;
+	entity.hit = function (){
+		if(entity.state < 4){
+			entity.state ++;
+			console.log("hit");
+		}
+		switch (entity.state){
+			case 1:
+				entity.sprite = entity.sprite1;
+				break;
+			case 2:
+				entity.sprite = entity.sprite2;
+				break;
+			case 3:
+				entity.sprite = entity.sprite3;
+				break;
+			default:
+				entity.sprite = entity.sprite1;
+				break;
+		}
+	};
 
 	return entity;
 }
@@ -76,7 +97,7 @@ game.playerTest =game.animations.get("playerTest");
 
   scene.notAttack = function () {
     var direction = scene.player.direction;
-   
+   	scene.player.attacking = false;
     if (direction === "up") {
       scene.player.sprite = game.upArrow;
     }
@@ -146,7 +167,7 @@ game.playerTest =game.animations.get("playerTest");
 
 			if (this.obstacles[x].wasLeft(this.player)) {
 			  this.player.x = this.obstacles[x].x + this.obstacles[x].width;
-      }
+      		}
 
 			if (this.obstacles[x].wasRight(this.player)) {
 				this.player.x = this.obstacles[x].x-this.player.width;
@@ -154,9 +175,9 @@ game.playerTest =game.animations.get("playerTest");
       
 			if (this.obstacles[x].wasAbove(this.player)) {
 			  this.player.y = this.obstacles[x].y + this.obstacles[x].height;
-      }
+      		}
 		  
-      if (this.obstacles[x].wasBelow(this.player)) {
+      		if (this.obstacles[x].wasBelow(this.player)) {
 				this.player.y = this.obstacles[x].y - this.player.height;
 			}
 		}
