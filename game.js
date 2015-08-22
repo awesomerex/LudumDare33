@@ -25,9 +25,15 @@ function centerText(context, text, offsetX, offsetY) {
 	context.fillText(text, x, y);
 }
 
-function generateBuilding(x, y, width, height, spriteName, offsetx, offsety){
-	var sprite = game.animations.get(spriteName);
+function generateBuilding(x, y, width, height, buildingNumber, offsetx, offsety){
+	var sprite = game.animations.get("building"+buildingNumber+"_1");
+	var sprite2 = game.animations.get("building"+buildingNumber+"_2");
+	var sprite3 = game.animations.get("building"+buildingNumber+"_3");
 	var entity = new Splat.AnimatedEntity(x,y, width, height, sprite, offsetx, offsety);
+	entity.sprite1 = sprite;
+	entity.sprite2 = sprite2;
+	entity.sprite3 = sprite3;
+
 	return entity;
 }
 
@@ -68,21 +74,13 @@ game.playerTest =game.animations.get("playerTest");
 
 	scene.camera = new Splat.EntityBoxCamera(scene.player, 32, 32, canvas.width/2, canvas.height/2);
 
-	var building = generateBuilding(100, 100, 32, 32, "building1_1", 0, 0);
+	var building = generateBuilding(100, 100, 32, 32, "1", 0, 0);
 	scene.obstacles.push(building);
 
 
-	building = generateBuilding(164, 100, 32, 32, "building1_2", 0, 0);
+	building = generateBuilding(164, 100, 32, 32, "2", 0, -32);
 	scene.obstacles.push(building);
 
-	building = generateBuilding(164, 100, 32, 32, "building1_2", 0, 0);
-	scene.obstacles.push(building);
-
-	building = generateBuilding(100, 164, 32, 32, "building2_1", 0, -32);
-	scene.obstacles.push(building);
-
-	building = generateBuilding(164, 164, 32, 32, "building2_2", 0, -32);
-	scene.obstacles.push(building);
 
 	scene.drawables.push.apply(scene.drawables, scene.obstacles);
 	scene.drawables.push(scene.player);
