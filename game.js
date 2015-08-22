@@ -44,24 +44,29 @@ game.playerTest =game.animations.get("playerTest");
 
 	scene.road = new Splat.AnimatedEntity(0,0, canvas.width, canvas.height, fourWayRoad, 0, 0);
 	scene.drawables = [];
+	scene.obstacles = [];
 	scene.player = new Splat.AnimatedEntity(canvas.width/2, canvas.height/2, 32, 32, game.playerTest, 0, -32);
 
 	scene.camera = new Splat.EntityBoxCamera(scene.player, 32, 32, canvas.width/2, canvas.height/2);
 
 	var building = generateBuilding(100, 100, 32, 32, "building1_1", 0, 0);
-	scene.drawables.push(building);
+	scene.obstacles.push(building);
+
 
 	building = generateBuilding(164, 100, 32, 32, "building1_2", 0, 0);
-	scene.drawables.push(building);
+	scene.obstacles.push(building);
 
 	building = generateBuilding(164, 100, 32, 32, "building1_2", 0, 0);
-	scene.drawables.push(building);
+	scene.obstacles.push(building);
 
 	building = generateBuilding(100, 164, 32, 32, "building2_1", 0, -32);
-	scene.drawables.push(building);
+	scene.obstacles.push(building);
 
 	building = generateBuilding(164, 164, 32, 32, "building2_2", 0, -32);
-	scene.drawables.push(building);
+	scene.obstacles.push(building);
+
+	scene.drawables.push.apply(scene.drawables, scene.obstacles);
+	scene.drawables.push(scene.player);
 
 }, function(elapsedMillis) {
 	// simulation
@@ -87,27 +92,27 @@ game.playerTest =game.animations.get("playerTest");
 
 	this.player.move(elapsedMillis);
 	//collision detection
-	for (var x = 0; x < this.drawables.length; x++){
-		if(this.player.collides(this.drawables[x])){
+	for (var x = 0; x < this.obstacles.length; x++){
+		if(this.player.collides(this.obstacles[x])){
 			console.log("colliding");
-			if (this.drawables[x].wasLeft(this.player) ||
-				this.drawables[x].wasRight(this.player) ){
+			if (this.obstacles[x].wasLeft(this.player) ||
+				this.obstacles[x].wasRight(this.player) ){
 				this.player.vx = 0;
-				if(this.drawables[x].x < this.player.x){
-					this.player.x = this.drawables[x].x + this.drawables[x].width;
+				if(this.obstacles[x].x < this.player.x){
+					this.player.x = this.obstacles[x].x + this.obstacles[x].width;
 				}
 				else{
-					this.player.x = this.drawables[x].x-this.player.width;
+					this.player.x = this.obstacles[x].x-this.player.width;
 				}
 			}
-			if (this.drawables[x].wasAbove(this.player) ||
-				this.drawables[x].wasBelow(this.player)){
+			if (this.obstacles[x].wasAbove(this.player) ||
+				this.obstacles[x].wasBelow(this.player)){
 				this.player.vy = 0;
-				if(this.drawables[x].y < this.player.y){
-					this.player.y = this.drawables[x].y + this.drawables[x].height;					
+				if(this.obstacles[x].y < this.player.y){
+					this.player.y = this.obstacles[x].y + this.obstacles[x].height;					
 				}
 				else{
-					this.player.y = this.drawables[x].y - this.player.height;
+					this.player.y = this.obstacles[x].y - this.player.height;
 				}
 			}
 		}
@@ -122,11 +127,10 @@ game.playerTest =game.animations.get("playerTest");
 	context.fillStyle = "#fff";
 	context.font = "25px helvetica";
 	centerText(context, "Blank SplatJS Project", 0, canvas.height / 2 - 13);
-
+	this.drawables.sort(function(a,b){return a.y - b.y;});
 	for (var x = 0 ; x < this.drawables.length; x ++){
 		this.drawables[x].draw(context);
 	}
-	this.player.draw(context);
 
 	this.road.draw(context);
 	
