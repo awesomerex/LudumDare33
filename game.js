@@ -6,11 +6,40 @@ var canvas = document.getElementById("canvas");
 var manifest = {
 	"images": {
 	},
+
 	"sounds": {
 	},
+
 	"fonts": {
 	},
+
 	"animations": {
+    "leftArrow": {
+      "strip": "assets/images/playerTest_small.png",
+      "frames": 1,
+      "msPerFrame": 100
+    },
+
+    "rightArrow": {
+      "strip": "assets/images/playerTest_small.png",
+      "frames": 1,
+      "msPerFrame": 100,
+      "flip": "vertical"
+    },
+     
+    "upArrow": {
+      "strip": "assets/images/playerTest_small.png",
+      "frames": 1,
+      "msPerFrame": 100,
+      "rotate": "clockwise"
+    },
+
+    "downArrow": {
+      "strip": "assets/images/playerTest_small.png",
+      "frames": 1,
+      "msPerFrame": 100
+    },
+    
 		"roadFourWay": {
 			"strip": "assets/images/Road_FourWay.png",
 			"frames": 1,
@@ -43,6 +72,11 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
 	var scene = this;
 
 	var fourWayRoad = game.animations.get("roadFourWay");
+game.leftArrow = game.animations.get("leftArrow");
+game.rightArrow = game.animations.get("rightArrow");
+game.upArrow = game.animations.get("upArrow");
+game.downArrow = game.animations.get("downArrow");
+
 	scene.road = new Splat.AnimatedEntity(0,0, canvas.width, canvas.height, fourWayRoad, 0, 0);
 	scene.camera = new Splat.Camera(0, 0, canvas.width, canvas.height);
 	scene.drawables = [];
@@ -69,18 +103,23 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
 	// simulation
 	if (game.keyboard.isPressed("left")) {
 		this.player.x -= 1;
+    console.log(this.player.sprite);
+    this.player.sprite = game.leftArrow;
 		this.camera.x -= 1;
 	}
 	if (game.keyboard.isPressed("right")) {
 		this.player.x += 1;
+//    this.player.sprite = game.rightArrow;
 		this.camera.x += 1;
 	}
 	if (game.keyboard.isPressed("up")) {
 		this.player.y -= 1;
+//    this.player.sprite = game.upArrow;
 		this.camera.y -= 1;
 	}
 	if (game.keyboard.isPressed("down")) {
 		this.player.y += 1;
+//    this.player.sprite = game.downArrow;
 		this.camera.y += 1;
 	}
 
