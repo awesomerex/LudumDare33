@@ -15,29 +15,29 @@ var manifest = {
 
 	"animations": {
     "leftArrow": {
-      "strip": "assets/images/playerTest_small.png",
+      "strip": "assets/images/playerTest_left.png",
       "frames": 1,
       "msPerFrame": 100
     },
 
     "rightArrow": {
-      "strip": "assets/images/playerTest_small.png",
+      "strip": "assets/images/playerTest_left.png",
       "frames": 1,
       "msPerFrame": 100,
-      "flip": "vertical"
+      "flip": "horizontal"
     },
      
     "upArrow": {
-      "strip": "assets/images/playerTest_small.png",
+      "strip": "assets/images/playerTest_up.png",
       "frames": 1,
-      "msPerFrame": 100,
-      "rotate": "clockwise"
+      "msPerFrame": 100
     },
 
     "downArrow": {
-      "strip": "assets/images/playerTest_small.png",
+      "strip": "assets/images/playerTest_up.png",
       "frames": 1,
-      "msPerFrame": 100
+      "msPerFrame": 100,
+      "flip": "vertical"
     },
     
 		"roadFourWay": {
@@ -50,10 +50,10 @@ var manifest = {
 
 var game = new Splat.Game(canvas, manifest);
 
-function drawPlayer(context, drawable){
-	context.fillStyle = drawable.color;
-	context.fillRect(drawable.x, drawable.y, drawable.height, drawable.width);
-}
+// function drawPlayer(context, drawable){
+// 	context.fillStyle = drawable.color;
+// 	context.fillRect(drawable.x, drawable.y, drawable.height, drawable.width);
+// }
 
 function drawBuilding(context, drawable){
 	context.fillStyle = drawable.color;
@@ -78,50 +78,74 @@ game.upArrow = game.animations.get("upArrow");
 game.downArrow = game.animations.get("downArrow");
 
 	scene.road = new Splat.AnimatedEntity(0,0, canvas.width, canvas.height, fourWayRoad, 0, 0);
-	scene.camera = new Splat.Camera(0, 0, canvas.width, canvas.height);
 	scene.drawables = [];
-	scene.player = new Splat.Entity(canvas.width/2, canvas.height/2, 50, 50);
-	scene.player.color = "red";
+	scene.player = new Splat.AnimatedEntity(canvas.width/2, canvas.height/2, 32, 32, game.upArrow, 0, 0);
 
-	var building = new Splat.Entity(100, 100, 100, 100);
+	scene.camera = new Splat.EntityBoxCamera(scene.player, 32, 32, canvas.width/2, canvas.height/2);
+
+	var building = new Splat.Entity(100, 100, 32, 32);
 	building.color = "blue";
 	scene.drawables.push(building);
 
-	building = new Splat.Entity(100, 300, 100, 100);
+	building = new Splat.Entity(100, 164, 32, 32);
 	building.color = "blue";
 	scene.drawables.push(building);
 
-	scene.building3 = new Splat.Entity(300, 100, 100, 100);
+	scene.building3 = new Splat.Entity(164, 100, 32, 32);
 	scene.building3.color = "blue";
 	scene.drawables.push(scene.building3);
 
-	scene.building4 = new Splat.Entity(300, 300, 100, 100);
+	scene.building4 = new Splat.Entity(164, 164, 32, 32);
 	scene.building4.color = "blue";
 	scene.drawables.push(scene.building4);
 
-}, function() {
+}, function(elapsedMillis) {
 	// simulation
+	this.player.vx *= 0.2;
+	this.player.vy *= 0.2;
+
 	if (game.keyboard.isPressed("left")) {
-		this.player.x -= 1;
-    console.log(this.player.sprite);
-    this.player.sprite = game.leftArrow;
-		this.camera.x -= 1;
+		this.player.vx -= 0.1;
 	}
 	if (game.keyboard.isPressed("right")) {
-		this.player.x += 1;
-//    this.player.sprite = game.rightArrow;
-		this.camera.x += 1;
+		this.player.vx += 0.1;
 	}
 	if (game.keyboard.isPressed("up")) {
-		this.player.y -= 1;
-//    this.player.sprite = game.upArrow;
-		this.camera.y -= 1;
+		this.player.vy -= 0.1;
 	}
 	if (game.keyboard.isPressed("down")) {
-		this.player.y += 1;
-//    this.player.sprite = game.downArrow;
-		this.camera.y += 1;
+		this.player.vy += 0.1;
+>>>>>>> 9c3c50228b0b9625ac060a88bb543748a857bf3e
 	}
+
+	this.player.move(elapsedMillis);
+	//collision detection
+	for (var x = 0; x < this.drawables.length; x++){
+		if(this.player.collides(this.drawables[x])){
+			console.log("colliding");
+			if (this.drawables[x].wasLeft(this.player) ||
+				this.drawables[x].wasRight(this.player) ){
+				this.player.vx = 0;
+				if(this.drawables[x].x < this.player.x){
+					this.player.x = this.drawables[x].x + this.drawables[x].width;
+				}
+				else{
+					this.player.x = this.drawables[x].x-this.player.width;
+				}
+			}
+			if (this.drawables[x].wasAbove(this.player) ||
+				this.drawables[x].wasBelow(this.player)){
+				this.player.vy = 0;
+				if(this.drawables[x].y < this.player.y){
+					this.player.y = this.drawables[x].y + this.drawables[x].height;					
+				}
+				else{
+					this.player.y = this.drawables[x].y - this.player.height;
+				}
+			}
+		}
+	} 
+	
 
 }, function(context) {
 	// draw
@@ -137,8 +161,7 @@ game.downArrow = game.animations.get("downArrow");
 	}
 
 	this.road.draw(context);
-
-	drawPlayer(context, this.player);
+	this.player.draw(context);
 
 }));
 
