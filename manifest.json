@@ -4,6 +4,7 @@
 	},
 
 	"sounds": {
+		"gruntSmash" : "assets/sounds/smash-grunt.mp3"
 	},
 
 	"fonts": {

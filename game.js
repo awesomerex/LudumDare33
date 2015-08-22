@@ -38,6 +38,7 @@ function generateBuilding(x, y, width, height, buildingNumber, offsetx, offsety)
 		if(entity.state < 4){
 			entity.state ++;
 			console.log("hit");
+			game.sounds.play("gruntSmash");
 		}
 		switch (entity.state){
 			case 1:
@@ -50,7 +51,7 @@ function generateBuilding(x, y, width, height, buildingNumber, offsetx, offsety)
 				entity.sprite = entity.sprite3;
 				break;
 			default:
-				entity.sprite = entity.sprite1;
+				entity.sprite = entity.sprite2;
 				break;
 		}
 	};
@@ -164,6 +165,7 @@ game.playerTest =game.animations.get("playerTest");
 	for (var x = 0; x < this.obstacles.length; x++){
 		if(this.player.collides(this.obstacles[x])){
 			console.log("colliding");
+			this.obstacles[x].hit();
 
 			if (this.obstacles[x].wasLeft(this.player)) {
 			  this.player.x = this.obstacles[x].x + this.obstacles[x].width;
