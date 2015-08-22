@@ -66,30 +66,51 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
 	scene.building4.color = "blue";
 	scene.drawables.push(scene.building4);
 
-}, function() {
+}, function(elapsedMillis) {
 	// simulation
+	this.player.vx *= 0.2;
+	this.player.vy *= 0.2;
+
 	if (game.keyboard.isPressed("left")) {
-		this.player.x -= 1;
-		this.camera.x -= 1;
+		this.player.vx -= 0.1;
 	}
 	if (game.keyboard.isPressed("right")) {
-		this.player.x += 1;
-		this.camera.x += 1;
+		this.player.vx += 0.1;
 	}
 	if (game.keyboard.isPressed("up")) {
-		this.player.y -= 1;
-		this.camera.y -= 1;
+		this.player.vy -= 0.1;
 	}
 	if (game.keyboard.isPressed("down")) {
-		this.player.y += 1;
-		this.camera.y += 1;
+		this.player.vy += 0.1;
 	}
+
+	this.player.move(elapsedMillis);
 	//collision detection
 	for (var x = 0; x < this.drawables.length; x++){
-		if(this.drawables[x].collides(this.player)){
-			this.player.resolveCollisionWith(this.drawables[x]);
+		if(this.player.collides(this.drawables[x])){
+			console.log("colliding");
+			if (this.drawables[x].wasLeft(this.player) ||
+				this.drawables[x].wasRight(this.player) ){
+				this.player.vx = 0;
+				if(this.drawables[x].x < this.player.x){
+					this.player.x = this.drawables[x].x + this.drawables[x].width;
+				}
+				else{
+					this.player.x = this.drawables[x].x-this.player.width;
+				}
+			}
+			if (this.drawables[x].wasAbove(this.player) ||
+				this.drawables[x].wasBelow(this.player)){
+				this.player.vy = 0;
+				if(this.drawables[x].y < this.player.y){
+					this.player.y = this.drawables[x].y + this.drawables[x].height;					
+				}
+				else{
+					this.player.y = this.drawables[x].y - this.player.height;
+				}
+			}
 		}
-	}
+	} 
 	
 
 }, function(context) {
