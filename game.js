@@ -23,6 +23,7 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
 	// initialization
 	var scene = this;
 
+
 	var fourWayRoad = game.animations.get("roadFourWay");
 game.leftArrow = game.animations.get("leftArrow");
 game.rightArrow = game.animations.get("rightArrow");
@@ -32,6 +33,24 @@ game.downArrow = game.animations.get("downArrow");
 	scene.road = new Splat.AnimatedEntity(0,0, canvas.width, canvas.height, fourWayRoad, 0, 0);
 	scene.drawables = [];
 	scene.player = new Splat.AnimatedEntity(canvas.width/2, canvas.height/2, 32, 32, game.upArrow, 0, 0);
+  scene.player.direction = "up"; 
+
+  scene.attack = function () {
+    var direction = scene.player.direction;
+  
+    if (direction === "up") {
+      scene.player.sprite = undefined;
+    }
+    if (direction === "down") {
+      scene.player.sprite = undefined;
+    }
+    if (direction === "left") {
+      scene.player.sprite = undefined;
+    }
+    if (direction === "right") {
+      scene.player.sprite = undefined;
+    }
+  };
 
 	scene.camera = new Splat.EntityBoxCamera(scene.player, 32, 32, canvas.width/2, canvas.height/2);
 
@@ -56,21 +75,28 @@ game.downArrow = game.animations.get("downArrow");
 	this.player.vx *= 0.2;
 	this.player.vy *= 0.2;
 
+  if (game.keyboard.isPressed("space")) {
+    this.attack();
+  }
 	if (game.keyboard.isPressed("left")) {
 		this.player.vx -= 0.1;
     this.player.sprite = game.leftArrow;
+    this.player.direction = "left";
 	}
 	if (game.keyboard.isPressed("right")) {
 		this.player.vx += 0.1;
     this.player.sprite = game.rightArrow;
+    this.player.direction = "right";
 	}
 	if (game.keyboard.isPressed("up")) {
 		this.player.vy -= 0.1;
     this.player.sprite = game.upArrow;
+    this.player.direction = "up";
 	}
 	if (game.keyboard.isPressed("down")) {
 		this.player.vy += 0.1;
     this.player.sprite = game.downArrow;
+    this.player.direction = "down";
 	}
 
 	this.player.move(elapsedMillis);
