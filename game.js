@@ -145,25 +145,21 @@ game.playerTest =game.animations.get("playerTest");
 	for (var x = 0; x < this.obstacles.length; x++){
 		if(this.player.collides(this.obstacles[x])){
 			console.log("colliding");
-			if (this.obstacles[x].wasLeft(this.player) ||
-				this.obstacles[x].wasRight(this.player) ){
-				this.player.vx = 0;
-				if(this.obstacles[x].x < this.player.x){
-					this.player.x = this.obstacles[x].x + this.obstacles[x].width;
-				}
-				else{
-					this.player.x = this.obstacles[x].x-this.player.width;
-				}
+
+			if (this.obstacles[x].wasLeft(this.player)) {
+			  this.player.x = this.obstacles[x].x + this.obstacles[x].width;
+      }
+
+			if (this.obstacles[x].wasRight(this.player)) {
+				this.player.x = this.obstacles[x].x-this.player.width;
 			}
-			if (this.obstacles[x].wasAbove(this.player) ||
-				this.obstacles[x].wasBelow(this.player)){
-				this.player.vy = 0;
-				if(this.obstacles[x].y < this.player.y){
-					this.player.y = this.obstacles[x].y + this.obstacles[x].height;					
-				}
-				else{
-					this.player.y = this.obstacles[x].y - this.player.height;
-				}
+      
+			if (this.obstacles[x].wasAbove(this.player)) {
+			  this.player.y = this.obstacles[x].y + this.obstacles[x].height;
+      }
+		  
+      if (this.obstacles[x].wasBelow(this.player)) {
+				this.player.y = this.obstacles[x].y - this.player.height;
 			}
 		}
 	} 
