@@ -169,6 +169,7 @@ game.playerTest =game.animations.get("playerTest");
 
 }, function(context) {
 	// draw
+	context.clearRect(this.camera.x, this.camera.y , canvas.width, canvas.height);
 	context.fillStyle = "#092227";
 	context.fillRect(0, 0, canvas.width, canvas.height);
 
