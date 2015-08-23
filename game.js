@@ -8,12 +8,12 @@ var game = gameMaker.game;
 // var manifest = require("./manifest.json");
 // var game = new Splat.Game(canvas, manifest);
 
-function centerText(context, text, offsetX, offsetY) {
-	var w = context.measureText(text).width;
-	var x = offsetX + (canvas.width / 2) - (w / 2) | 0;
-	var y = offsetY | 0;
-	context.fillText(text, x, y);
-}
+// function centerText(context, text, offsetX, offsetY) {
+// 	var w = context.measureText(text).width;
+// 	var x = offsetX + (canvas.width / 2) - (w / 2) | 0;
+// 	var y = offsetY | 0;
+// 	context.fillText(text, x, y);
+// }
 
 
 function generateBuilding(x, y, width, height, buildingNumber, offsetx, offsety){
@@ -32,6 +32,7 @@ function generateBuilding(x, y, width, height, buildingNumber, offsetx, offsety)
 		if(entity.state < 4){
 			entity.state ++;
 			console.log("hit");
+            game.score++;
 			//destruction sound
 		}
 		switch (entity.state){
@@ -153,7 +154,6 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
 		game.sounds.play("footstep1");
 	});
 	game.isWalkSoundTimerRunning = false;
-  game.fourWayRoad = game.animations.get("roadFourWay");
   game.playerUp = game.animations.get("playerUp");
   game.playerDown = game.animations.get("playerDown");
   game.playerLeft = game.animations.get("playerLeft");
@@ -163,10 +163,9 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
   game.playerPunchLeft = game.animations.get("playerPunchLeft");
   game.playerPunchRight = game.animations.get("playerPunchRight");
   game.tilesheet = game.images.get("city-tileset");
+  game.score = 0;
 
-
-
-	scene.player = new Splat.AnimatedEntity(512, 512, 32, 32, game.playerDown, 0, -32);
+  scene.player = new Splat.AnimatedEntity(512, 512, 32, 32, game.playerDown, 0, -32);
   scene.player.direction = "down"; 
   scene.player.isMoving = false;
   scene.player.attack = function (objects, theTimer) {
@@ -243,7 +242,7 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
   };
 
 	scene.camera = new Splat.EntityBoxCamera(scene.player, 32, 32, canvas.width/2, canvas.height/2);
-
+    game.camera = scene.camera;
 	// building = generateBuilding(100, 100, 32, 32, "1", 0, 0);
 	// scene.obstacles.push(building);
 
@@ -350,14 +349,14 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
 
 }, function(context) {
 	// draw
-    
+    var scoreText = "Player Score " + game.score; 
+
 	context.clearRect(this.camera.x, this.camera.y , canvas.width, canvas.height);
 	context.fillStyle = "#092227";
 	context.fillRect(0, 0, 1024, 1024);
 
 	context.fillStyle = "#fff";
 	context.font = "25px helvetica";
-	centerText(context, "Blank SplatJS Project", 0, canvas.height / 2 - 13);
 	this.drawables.sort(function(a,b){return a.y - b.y;});
 
 	for (var x = 0 ; x < this.background.length; x ++){
@@ -367,8 +366,16 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
 	for (x = 0 ; x < this.drawables.length; x ++){
 		this.drawables[x].draw(context);
 	}
+    
+    function drawScore() {
+        var x = game.camera.screenCenterX;
+        var y = game.camera.screenCenterY; 
+        var ctx = document.getElementById("canvas").getContext("2d");
+        ctx.font = "48px serif";
+        ctx.fillText(scoreText, x, y - 150);
+    }
 
-
+    drawScore();
 }));
 
 game.scenes.add("credits",new Splat.Scene(canvas, function() {
