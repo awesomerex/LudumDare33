@@ -2,9 +2,11 @@
 
 var Splat = require("splatjs");
 var canvas = document.getElementById("canvas");
+var gameMaker = require("./game_maker.js");
+var game = gameMaker.game;
 
-var manifest = require("./manifest.json");
-var game = new Splat.Game(canvas, manifest);
+// var manifest = require("./manifest.json");
+// var game = new Splat.Game(canvas, manifest);
 
 function centerText(context, text, offsetX, offsetY) {
 	var w = context.measureText(text).width;
