@@ -2,9 +2,11 @@
 
 var Splat = require("splatjs");
 var canvas = document.getElementById("canvas");
+var gameMaker = require("./game_maker.js");
+var game = gameMaker.game;
 
-var manifest = require("./manifest.json");
-var game = new Splat.Game(canvas, manifest);
+// var manifest = require("./manifest.json");
+// var game = new Splat.Game(canvas, manifest);
 
 function centerText(context, text, offsetX, offsetY) {
 	var w = context.measureText(text).width;
@@ -12,16 +14,6 @@ function centerText(context, text, offsetX, offsetY) {
 	var y = offsetY | 0;
 	context.fillText(text, x, y);
 }
-
-function generateTile(x, y, index){
-	var entity = new Splat.Entity(x, y, 32, 32);
-	entity.index = index;
-	entity.draw = function drawFromTileSet(context){
-		context.drawImage(game.tilesheet, game.spriteLookup[this.index].x, game.spriteLookup[this.index].y, 32, 32, this.x, this.y, 32, 32);
-	};
-	return entity;
-}
-
 
 
 function generateBuilding(x, y, width, height, buildingNumber, offsetx, offsety){
@@ -61,44 +53,86 @@ function generateBuilding(x, y, width, height, buildingNumber, offsetx, offsety)
 game.scenes.add("title", new Splat.Scene(canvas, function() {
 	// initialization
 	var scene = this;
-	game.spriteLookup = 
-	{
-	0: {"x":0, "y":0},
-	1: {"x":32, "y":0},
-	2: {"x":64, "y":0},
-	3: {"x":96, "y":0},
-	4: {"x":128, "y":0},
-	
-	5: {"x":0, 	 "y":32},
-	6: {"x":32,	 "y":32},
-	7: {"x":64,	 "y":32},
-	8: {"x":96,	 "y":32},
-	9: {"x":128, "y":32},
+	scene.obstacles = [];
+	scene.drawables = [];
+	scene.background = [];
+    var cityTiles = require("./city_tiles.js");
+    var cityMap = cityTiles.cityMap;
+    
+    for (var x = 0; x < 40; x++) {   
+        for (var y = 0; y < 40; y++) {
+            var tile = cityMap[x][y];
 
-	10: {"x":0,   "y":64},
-	11: {"x":32,  "y":64},
-	12: {"x":64,  "y":64},
-	13: {"x":96,  "y":64},
-	14: {"x":128, "y":64},
+            if (tile > 15 && tile < 20) { 
+                var height, number;
+                
+                switch (tile) {
+                    case 16 || 18:
+                        height = 1;
+                        number = 1;
+                        break;
+                    case 17 || 19: 
+                        height = 2;
+                        number = 2;
+                        break;
+                }
 
-	15: {"x":0,   "y":96},
-	16: {"x":32,  "y":96},
-	17: {"x":64,  "y":96},
-	18: {"x":96,  "y":96},
-	19: {"x":128, "y":96},
+                var building = new generateBuilding(x * 32, y * 32, 32, 32, number, 0, height * 32); 
 
-	20: {"x":0,   "y":128},
-	21: {"x":32,  "y":128},
-	22: {"x":64,  "y":128},
-	23: {"x":96,  "y":128},
-	24: {"x":128, "y":128},
-
-	25: {"x":0,   "y":160},
-	26: {"x":32,  "y":160},
-	27: {"x":64,  "y":160},
-	28: {"x":96,  "y":160},
-	29: {"x":128, "y":160},
-};
+                scene.obstacles.push(building);
+            } else {
+            	scene.background.push(generateTile(x * 32, y * 32, tile));
+                //scene.drawables.push(generateTile(x * 32, y * 32, tile));
+            }
+        }
+    }
+    
+    	game.spriteLookup = 
+    	{
+    	0: {"x":32, "y":0},
+    	1: {"x":0, "y":0},
+    	6: {"x":64, "y":0},
+    	3: {"x":96, "y":0},
+    	4: {"x":128, "y":0},
+    	
+    	5: {"x":0, 	 "y":32},
+    	2: {"x":32,	 "y":32},
+    	7: {"x":64,	 "y":32},
+    	8: {"x":96,	 "y":32},
+    	13: {"x":128, "y":32},
+    
+    	10: {"x":0,   "y":64},
+    	11: {"x":32,  "y":64},
+    	12: {"x":64,  "y":64},
+    	9: {"x":96,  "y":64},
+    	14: {"x":128, "y":64},
+    
+    	15: {"x":0,   "y":96},
+    	16: {"x":32,  "y":96},
+    	17: {"x":64,  "y":96},
+    	18: {"x":96,  "y":96},
+    	19: {"x":128, "y":96},
+    
+    	20: {"x":0,   "y":128},
+    	21: {"x":32,  "y":128},
+    	22: {"x":64,  "y":128},
+    	23: {"x":96,  "y":128},
+    	24: {"x":128, "y":128},
+    
+    	25: {"x":0,   "y":160},
+    	26: {"x":32,  "y":160},
+    	27: {"x":64,  "y":160},
+    	28: {"x":96,  "y":160},
+    	29: {"x":128, "y":160},
+    };
+    function generateTile(x, y, index){
+    	var entity = new Splat.Entity(x, y, 32, 32);
+    	entity.index = index;
+    	entity.draw = function drawFromTileSet(context){
+    		context.drawImage(game.tilesheet, game.spriteLookup[this.index].x, game.spriteLookup[this.index].y, 32, 32, this.x, this.y, 32, 32);
+    	};
+    	return entity;
+    }
 	//timer for building destruction cooldown
 	scene.timers.buildingHitTimer = new Splat.Timer(undefined, 1000, function(){
 		scene.player.canhit = true;
@@ -117,18 +151,15 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
 		game.sounds.play("footstep1");
 	});
 	game.isWalkSoundTimerRunning = false;
-    game.fourWayRoad = game.animations.get("roadFourWay");
-    game.playerUp = game.animations.get("playerUp");
-    game.playerDown = game.animations.get("playerDown");
-    game.playerLeft = game.animations.get("playerLeft");
-    game.playerRight = game.animations.get("playerRight");
-    game.playerPunchDown = game.animations.get("playerPunchDown");
-    game.tilesheet = game.images.get("city-tileset");
+  game.fourWayRoad = game.animations.get("roadFourWay");
+  game.playerUp = game.animations.get("playerUp");
+  game.playerDown = game.animations.get("playerDown");
+  game.playerLeft = game.animations.get("playerLeft");
+  game.playerRight = game.animations.get("playerRight");
+  game.playerPunchDown = game.animations.get("playerPunchDown");
+  game.tilesheet = game.images.get("city-tileset");
 
 
-	scene.road = new Splat.AnimatedEntity(0,0, canvas.width, canvas.height, game.fourWayRoad, 0, 0);
-	scene.obstacles = [];
-	scene.drawables = [];
 
 	scene.player = new Splat.AnimatedEntity(512, 512, 32, 32, game.playerDown, 0, -32);
   scene.player.direction = "down"; 
@@ -208,19 +239,12 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
 
 	scene.camera = new Splat.EntityBoxCamera(scene.player, 32, 32, canvas.width/2, canvas.height/2);
 
-	var building = generateBuilding(100, 100, 32, 32, "1", 0, 0);
-	scene.obstacles.push(building);
+	// building = generateBuilding(100, 100, 32, 32, "1", 0, 0);
+	// scene.obstacles.push(building);
 
 	
-	building = generateBuilding(164, 100, 32, 32, "2", 0, -32);
-	scene.obstacles.push(building);
-
-	var bgTile = new Splat.Entity(200, 200, 32, 32);
-	bgTile.index = 1;
-	bgTile.draw = function drawFromTileSet(context){
-	context.drawImage(game.tilesheet, game.spriteLookup[this.index].x, game.spriteLookup[this.index].y, 32, 32, this.x, this.y, 32, 32);
-				};
-	scene.drawables.push(bgTile);
+	// building = generateBuilding(164, 100, 32, 32, "2", 0, -32);
+	// scene.obstacles.push(building);
 
 	scene.drawables.push.apply(scene.drawables, scene.obstacles);
 	scene.drawables.push(scene.player);
@@ -321,6 +345,7 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
 
 }, function(context) {
 	// draw
+    
 	context.clearRect(this.camera.x, this.camera.y , canvas.width, canvas.height);
 	context.fillStyle = "#092227";
 	context.fillRect(0, 0, 1024, 1024);
@@ -329,12 +354,15 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
 	context.font = "25px helvetica";
 	centerText(context, "Blank SplatJS Project", 0, canvas.height / 2 - 13);
 	this.drawables.sort(function(a,b){return a.y - b.y;});
-	for (var x = 0 ; x < this.drawables.length; x ++){
+
+	for (var x = 0 ; x < this.background.length; x ++){
+		this.background[x].draw(context);
+	}
+
+	for (x = 0 ; x < this.drawables.length; x ++){
 		this.drawables[x].draw(context);
 	}
 
-	this.road.draw(context);
-	
 
 }));
 

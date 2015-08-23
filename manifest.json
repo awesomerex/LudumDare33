@@ -13,32 +13,7 @@
 	},
 
 	"animations": {
-    "leftArrow": {
-      "strip": "assets/images/playerTest_left.png",
-      "frames": 1,
-      "msPerFrame": 100
-    },
-
-    "rightArrow": {
-      "strip": "assets/images/playerTest_left.png",
-      "frames": 1,
-      "msPerFrame": 100,
-      "flip": "horizontal"
-    },
-     
-    "upArrow": {
-      "strip": "assets/images/playerTest_up.png",
-      "frames": 1,
-      "msPerFrame": 100
-    },
-
-    "downArrow": {
-      "strip": "assets/images/playerTest_up.png",
-      "frames": 1,
-      "msPerFrame": 100,
-      "flip": "vertical"
-    },
-	    
+    
 		"roadFourWay": {
 			"strip": "assets/images/Road_FourWay.png",
 			"frames": 1,
