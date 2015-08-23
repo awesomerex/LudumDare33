@@ -3,7 +3,9 @@
 	},
 
 	"sounds": {
-		"gruntSmash" : "assets/sounds/smash-grunt.mp3"
+		"gruntSmash" : "assets/sounds/smash-grunt.mp3",
+		"footstep1" : "assets/sounds/footstep1.mp3",
+		"footstep2" : "assets/sounds/footstep2.mp3"
 	},
 
 	"fonts": {
@@ -87,32 +89,32 @@
     "playerUp": {
     	"strip": "assets/images/Hero_Up.png",
     	"frames": 3,
-    	"msPerFrame": 100
+    	"msPerFrame": 300
     },
 
     "playerDown": {
     	"strip": "assets/images/Hero_Down.png",
     	"frames": 3,
-    	"msPerFrame": 100
+    	"msPerFrame": 300
     },
 
     "playerLeft": {
     	"strip": "assets/images/Hero_Side.png",
     	"frames": 3,
-    	"msPerFrame": 100
+    	"msPerFrame": 300
     },
 
     "playerRight": {
     	"strip": "assets/images/Hero_Side.png",
     	"frames": 3,
-    	"msPerFrame": 100,
+    	"msPerFrame": 300,
     	"flip": "horizontal"
     },
 
     "playerPunchDown": {
       "strip": "assets/images/Hero_Punch_Down.png",
       "frames": 4,
-      "msPerFrame": 100,
+      "msPerFrame": 400,
     },
   }
 };

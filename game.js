@@ -29,6 +29,7 @@ function generateBuilding(x, y, width, height, buildingNumber, offsetx, offsety)
 		if(entity.state < 4){
 			entity.state ++;
 			console.log("hit");
+			//destruction sound
 		}
 		switch (entity.state){
 			case 1:
@@ -54,6 +55,18 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
 		console.log("player can hit");
 	});
 
+	//timer for time limit
+	scene.timers.timeLimit = new Splat.Timer(function(){
+		//update a timer lable
+	}, 30000, undefined);
+
+	//timer for walking sounds
+	scene.timers.playWalkSound = new Splat.Timer(undefined, 300, function(){
+		this.reset();
+		this.start();
+		game.sounds.play("footstep1");
+	});
+	game.isWalkSoundTimerRunning = false;
   game.fourWayRoad = game.animations.get("roadFourWay");
   game.playerUp = game.animations.get("playerUp");
   game.playerDown = game.animations.get("playerDown");
@@ -65,12 +78,14 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
 	scene.obstacles = [];
 	scene.drawables = [];
 
-	scene.player = new Splat.AnimatedEntity(canvas.width/2, canvas.height/2, 32, 32, game.playerDown, 0, -32);
+	scene.player = new Splat.AnimatedEntity(512, 512, 32, 32, game.playerDown, 0, -32);
   scene.player.direction = "down"; 
+  scene.player.isMoving = false;
   scene.player.attack = function (objects, theTimer) {
   		//create an entity in front of the player
   		var x, y, width, height;
   		this.attacking = true;
+  		console.log("attacking");
   		switch(this.direction){
   			case "up":
   				x = this.x;
@@ -144,39 +159,62 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
 	var building = generateBuilding(100, 100, 32, 32, "1", 0, 0);
 	scene.obstacles.push(building);
 
+	
 	building = generateBuilding(164, 100, 32, 32, "2", 0, -32);
 	scene.obstacles.push(building);
+
+
 
 	scene.drawables.push.apply(scene.drawables, scene.obstacles);
 	scene.drawables.push(scene.player);
 
 }, function(elapsedMillis) {
-	// simulatio n
-	this.player.vx *= 0.2;
-	this.player.vy *= 0.2;
+	// simulation
+	//while player is moving run the footstep timer
+	if(this.player.vx !== 0 || this.player.vy !== 0){
+		console.log("moving");
+		this.player.isMoving = true;
+	}else{
+		this.player.isMoving = false;
+	}
+
+	if (this.player.isMoving && game.isWalkSoundTimerRunning === false){
+		game.isWalkSoundTimerRunning = true;
+		console.log("starting walk time");
+		this.timers.playWalkSound.start();
+	}
+	if( game.isWalkSoundTimerRunning === true && this.player.isMoving === false){
+		game.isWalkSoundTimerRunning = false;
+		console.log("stopping walk time");
+		this.timers.playWalkSound.stop();
+	}
+
+	this.player.vx = 0;
+	this.player.vy = 0;
 
   if (game.keyboard.isPressed("space")) {
+  	console.log("attack");
     this.player.attack(this.obstacles, this.timers.buildingHitTimer);
   } else {
     this.notAttack();
   }  
 	if (game.keyboard.isPressed("left")) {
-		this.player.vx -= 0.1;
+		this.player.vx -= 0.09;
     this.player.sprite = game.playerLeft;
     this.player.direction = "left";
 	}
 	if (game.keyboard.isPressed("right")) {
-		this.player.vx += 0.1;
+		this.player.vx += 0.09;
     this.player.sprite = game.playerRight;
     this.player.direction = "right";
 	}
 	if (game.keyboard.isPressed("up")) {
-		this.player.vy -= 0.1;
+		this.player.vy -= 0.09;
     this.player.sprite = game.playerUp;
     this.player.direction = "up";
 	}
 	if (game.keyboard.isPressed("down")) {
-		this.player.vy += 0.1;
+		this.player.vy += 0.09;
     this.player.sprite = game.playerDown;
     this.player.direction = "down";
 	}
