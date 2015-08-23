@@ -70,30 +70,35 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
   scene.player.attack = function (objects, theTimer) {
   		//create an entity in front of the player
   		var x, y, width, height;
+  		this.attacking = true;
   		switch(this.direction){
   			case "up":
   				x = this.x;
   				y = this.y - 1;
   				height = 1;
   				width = 32;
+  				scene.player.sprite = game.playerUp;
   				break;
   			case "left":
   				x = this.x - 1;
   				y = this.y;
   				height = 32;
   				width = 1;
+  				 scene.player.sprite = game.playerLeft;
   				break;
   			case "right":
   				x = this.x + this.width + 1;
   				y = this.y;
   				height = 32;
   				width = 1;
+  				scene.player.sprite = game.playerRight;
   				break;
   			case "down":
   				x = this.x;
   				y = this.y + this.height + 1;
   				height = 1;
   				width = 32;
+  				scene.player.sprite = game.playerPunchDown;
   				break;
   			case "default":
   				console.log("whaht Didj ya doo?");
@@ -116,23 +121,6 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
   scene.player.canhit = true;
   game.player = scene.player;
 
-  scene.attack = function () {
-    var direction = scene.player.direction;
-    scene.player.attacking = true;
-    
-    if (direction === "up") {
-      scene.player.sprite = game.playerUp;
-    }
-    if (direction === "down") {
-      scene.player.sprite = game.playerPunchDown;
-    }
-    if (direction === "left") {
-      scene.player.sprite = game.playerLeft;
-    }
-    if (direction === "right") {
-      scene.player.sprite = game.playerRight;
-    }
-  };
 
   scene.notAttack = function () {
     var direction = scene.player.direction;
