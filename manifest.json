@@ -77,6 +77,27 @@
 	    	"frames": 1,
 	    	"msPerFrame": 100
 	    },
+	    "playerUp": {
+	    	"strip": "assets/images/Hero_Up.png",
+	    	"frames": 3,
+	    	"msPerFrame": 100
+	    },
+	    "playerDown": {
+	    	"strip": "assets/images/Hero_Down.png",
+	    	"frames": 3,
+	    	"msPerFrame": 100
+	    },
+	    "playerLeft": {
+	    	"strip": "assets/images/Hero_Side.png",
+	    	"frames": 3,
+	    	"msPerFrame": 100
+	    },
+	    "playerRight": {
+	    	"strip": "assets/images/Hero_Side.png",
+	    	"frames": 3,
+	    	"msPerFrame": 100,
+	    	"flip": "horizontal"
+	    },
 	}
 };
 
