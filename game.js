@@ -77,9 +77,10 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
                         break;
                 }
 
-                var building = new generateBuilding(x * 32, y * 32, 32, 32, number, 0, height * 32); 
+                var building = new generateBuilding(x * 32, y * 32, 32, 32, number, 0, height * -32); 
 
                 scene.obstacles.push(building);
+               
             } else {
             	scene.background.push(generateTile(x * 32, y * 32, tile));
                 //scene.drawables.push(generateTile(x * 32, y * 32, tile));
@@ -110,11 +111,12 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
     	15: {"x":0,   "y":96},
     	16: {"x":32,  "y":96},
     	17: {"x":64,  "y":96},
+
     	18: {"x":96,  "y":96},
     	19: {"x":128, "y":96},
     
-    	20: {"x":0,   "y":128},
-    	21: {"x":32,  "y":128},
+    	21: {"x":0,   "y":128},
+    	20: {"x":32,  "y":128},
     	22: {"x":64,  "y":128},
     	23: {"x":96,  "y":128},
     	24: {"x":128, "y":128},
