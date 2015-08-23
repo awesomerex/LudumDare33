@@ -42,21 +42,21 @@ function generateBuilding(x, y, width, height, buildingNumber, offsetx, offsety)
 		}
 	};
 
-  entity.destruction = function () {
-      function notVulnerable() {
-        entity.vulnerable = false;
-      }
+  entity.destruction = function (theTimer) {
+      // function notVulnerable() {
+      //   entity.vulnerable = false;
+      // }
 
-      function isVulnerable() {
-        entity.vulnerable= true;
-      }
+      // function isVulnerable() {
+      //   entity.vulnerable= true;
+      // }
       
       if (entity.building === true && game.player.attacking) {
-        if (entity.vulnerable) {
+        if (game.player.canhit) {
           console.log("its vulnerable " + entity);
-          entity.hit();
-          var destroyTimer = new Splat.Timer(notVulnerable(entity), 10000, isVulnerable(entity));
-          destroyTimer.start();
+          game.player.canhit = false;
+          this.hit();
+          theTimer.start();
         }
       }
     };
@@ -69,6 +69,11 @@ function generateBuilding(x, y, width, height, buildingNumber, offsetx, offsety)
 game.scenes.add("title", new Splat.Scene(canvas, function() {
 	// initialization
 	var scene = this;
+	//timer for building destruction cooldown
+	scene.timers.buildingHitTimer = new Splat.Timer(undefined, 1000, function(){
+		scene.player.canhit = true;
+		console.log("player can hit");
+	});
 
 
 	var fourWayRoad = game.animations.get("roadFourWay");
@@ -88,6 +93,7 @@ game.playerRight = game.animations.get("playerRight");
 	scene.player = new Splat.AnimatedEntity(canvas.width/2, canvas.height/2, 32, 32, game.playerTest, 0, -32);
   scene.player.direction = "up"; 
   scene.player.attacking = false;
+  scene.player.canhit = true;
   game.player = scene.player;
 
   scene.attack = function () {
@@ -182,22 +188,22 @@ game.playerRight = game.animations.get("playerRight");
 
 			if (obstacle.wasLeft(this.player)) {
 			  this.player.x = obstacle.x + obstacle.width;
-        obstacle.destruction();
+        obstacle.destruction(this.timers.buildingHitTimer);
       }
 
 			if (obstacle.wasRight(this.player)) {
 				this.player.x = obstacle.x - this.player.width;
-        obstacle.destruction();
+        obstacle.destruction(this.timers.buildingHitTimer);
 			}
       
 			if (obstacle.wasAbove(this.player)) {
 			  this.player.y = obstacle.y + obstacle.height;
-        obstacle.destruction();
+        obstacle.destruction(this.timers.buildingHitTimer);
       		}
 		  
       		if (obstacle.wasBelow(this.player)) {
 				this.player.y = obstacle.y - this.player.height;
-        obstacle.destruction();
+        obstacle.destruction(this.timers.buildingHitTimer);
 			}
 		}
 	} 
