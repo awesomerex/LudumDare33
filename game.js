@@ -65,8 +65,8 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
 	scene.obstacles = [];
 	scene.drawables = [];
 
-	scene.player = new Splat.AnimatedEntity(canvas.width/2, canvas.height/2, 32, 32, game.playerTest, 0, -32);
-  scene.player.direction = "up"; 
+	scene.player = new Splat.AnimatedEntity(canvas.width/2, canvas.height/2, 32, 32, game.playerDown, 0, -32);
+  scene.player.direction = "down"; 
   scene.player.attack = function (objects, theTimer) {
   		//create an entity in front of the player
   		var x, y, width, height;
