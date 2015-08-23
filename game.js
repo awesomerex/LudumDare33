@@ -46,9 +46,11 @@ function generateBuilding(x, y, width, height, buildingNumber, offsetx, offsety)
 	return entity;
 }
 
+
 game.scenes.add("title", new Splat.Scene(canvas, function() {
 	// initialization
 	var scene = this;
+
 	//timer for building destruction cooldown
 	scene.timers.buildingHitTimer = new Splat.Timer(undefined, 1000, function(){
 		scene.player.canhit = true;
@@ -61,7 +63,7 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
 	}, 30000, undefined);
 
 	//timer for walking sounds
-	scene.timers.playWalkSound = new Splat.Timer(undefined, 300, function(){
+	scene.timers.playWalkSound = new Splat.Timer(undefined, 400, function(){
 		this.reset();
 		this.start();
 		game.sounds.play("footstep1");
@@ -73,6 +75,8 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
   game.playerLeft = game.animations.get("playerLeft");
   game.playerRight = game.animations.get("playerRight");
   game.playerPunchDown = game.animations.get("playerPunchDown");
+  game.tilesheet = game.images.get("city-tileset");
+
 
 	scene.road = new Splat.AnimatedEntity(0,0, canvas.width, canvas.height, game.fourWayRoad, 0, 0);
 	scene.obstacles = [];
@@ -163,7 +167,13 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
 	building = generateBuilding(164, 100, 32, 32, "2", 0, -32);
 	scene.obstacles.push(building);
 
-
+	var bgTile = new Splat.Entity(200, 200, 32, 32);
+	bgTile.index = 1;
+	bgTile.draw = function drawFromTileSet(context){
+	var lookup = {1: {"x":0, "y":0}};
+	context.drawImage(game.tilesheet, lookup[this.index].x, lookup[this.index].y, 32, 32, this.x, this.y, 32, 32);
+				};
+	scene.drawables.push(bgTile);
 
 	scene.drawables.push.apply(scene.drawables, scene.obstacles);
 	scene.drawables.push(scene.player);
@@ -220,6 +230,22 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
 	}
 
 	this.player.move(elapsedMillis);
+	
+	//set player boundaries
+	if(this.player.x < 0){
+		this.player.x = 0;
+	}
+	if(this.player.y < 0){
+		this.player.y = 0;
+	}
+	if(this.player.x > 1024 - this.player.width){
+		this.player.x = 1024 - this.player.width;
+	}
+
+	if(this.player.y > 1024 - this.player.height){
+		this.player.y = 1024 - this.player.height;
+	}
+
 	//collision detection
 	for (var x = 0; x < this.obstacles.length; x++){
     var obstacle = this.obstacles[x];
@@ -263,6 +289,14 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
 	this.road.draw(context);
 	
 
+}));
+
+game.scenes.add("credits",new Splat.Scene(canvas, function() {
+	//initialization
+},function(){
+	//simulation
+},function(){
+	//draw
 }));
 
 game.scenes.switchTo("loading");

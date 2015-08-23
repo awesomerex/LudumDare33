@@ -1,5 +1,6 @@
 {
 	"images": {
+    "city-tileset" : "assets/images/City_TileSet.png"
 	},
 
 	"sounds": {
