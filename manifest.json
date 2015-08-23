@@ -90,8 +90,27 @@
     "playerPunchDown": {
       "strip": "assets/images/Hero_Punch_Down.png",
       "frames": 4,
-      "msPerFrame": 400,
+      "msPerFrame": 400
     },
+
+    "playerPunchUp": {
+      "strip": "assets/images/Hero_Up_Punch.png",
+      "frames": 4,
+      "msPerFrame": 400
+    },
+
+    "playerPunchLeft": {
+      "strip": "assets/images/Hero_Side_Punch.png",
+      "frames": 4,
+      "msPerFrame": 400
+    },
+
+    "playerPunchRight": {
+      "strip": "assets/images/Hero_Side_Punch.png",
+      "frames": 4,
+      "msPerFrame": 400,
+      "flip": "horizontal"
+    }
   }
 };
 

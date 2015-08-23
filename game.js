@@ -161,6 +161,9 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
   game.playerLeft = game.animations.get("playerLeft");
   game.playerRight = game.animations.get("playerRight");
   game.playerPunchDown = game.animations.get("playerPunchDown");
+  game.playerPunchUp = game.animations.get("playerPunchUp");
+  game.playerPunchLeft = game.animations.get("playerPunchLeft");
+  game.playerPunchRight = game.animations.get("playerPunchRight");
   game.tilesheet = game.images.get("city-tileset");
 
 
@@ -179,21 +182,21 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
   				y = this.y - 1;
   				height = 1;
   				width = 32;
-  				scene.player.sprite = game.playerUp;
+  				scene.player.sprite = game.playerPunchUp;
   				break;
   			case "left":
   				x = this.x - 1;
   				y = this.y;
   				height = 32;
   				width = 1;
-  				 scene.player.sprite = game.playerLeft;
+  				 scene.player.sprite = game.playerPunchLeft;
   				break;
   			case "right":
   				x = this.x + this.width + 1;
   				y = this.y;
   				height = 32;
   				width = 1;
-  				scene.player.sprite = game.playerRight;
+  				scene.player.sprite = game.playerPunchRight;
   				break;
   			case "down":
   				x = this.x;
