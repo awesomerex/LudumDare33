@@ -43,6 +43,20 @@ function generateBuilding(x, y, width, height, buildingNumber, offsetx, offsety)
 		}
 	};
 
+<<<<<<< HEAD
+=======
+  entity.destruction = function (theTimer) {
+    if (entity.building === true && game.player.attacking) {
+      if (game.player.canhit) {
+        console.log("its vulnerable " + entity);
+        game.player.canhit = false;
+        this.hit();
+        theTimer.start();
+      }
+    }
+  };
+
+>>>>>>> 9b1f6a3ce376f78705fac1c3bb668bff08d36d49
 	return entity;
 }
 
@@ -55,17 +69,17 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
 		console.log("player can hit");
 	});
 
+  game.fourWayRoad = game.animations.get("roadFourWay");
+  game.playerUp = game.animations.get("playerUp");
+  game.playerDown = game.animations.get("playerDown");
+  game.playerLeft = game.animations.get("playerLeft");
+  game.playerRight = game.animations.get("playerRight");
+  game.playerPunchDown = game.animations.get("playerPunchDown");
 
-	var fourWayRoad = game.animations.get("roadFourWay");
-game.playerTest =game.animations.get("playerTest");
-game.playerUp = game.animations.get("playerUp");
-game.playerDown = game.animations.get("playerDown");
-game.playerLeft = game.animations.get("playerLeft");
-game.playerRight = game.animations.get("playerRight");
-
-	scene.road = new Splat.AnimatedEntity(0,0, canvas.width, canvas.height, fourWayRoad, 0, 0);
+	scene.road = new Splat.AnimatedEntity(0,0, canvas.width, canvas.height, game.fourWayRoad, 0, 0);
 	scene.obstacles = [];
 	scene.drawables = [];
+	
 	scene.player = new Splat.AnimatedEntity(canvas.width/2, canvas.height/2, 32, 32, game.playerTest, 0, -32);
   scene.player.direction = "up"; 
   scene.player.attack = function (objects, theTimer) {
@@ -112,6 +126,7 @@ game.playerRight = game.animations.get("playerRight");
   		entity = null;
   		console.log("attack created");
   };
+
   scene.player.attacking = false;
   scene.player.canhit = true;
   game.player = scene.player;
@@ -124,7 +139,7 @@ game.playerRight = game.animations.get("playerRight");
       scene.player.sprite = game.playerUp;
     }
     if (direction === "down") {
-      scene.player.sprite = game.playerDown;
+      scene.player.sprite = game.playerPunchDown;
     }
     if (direction === "left") {
       scene.player.sprite = game.playerLeft;
@@ -151,24 +166,19 @@ game.playerRight = game.animations.get("playerRight");
     }
   };
 
-
-    
-
 	scene.camera = new Splat.EntityBoxCamera(scene.player, 32, 32, canvas.width/2, canvas.height/2);
 
 	var building = generateBuilding(100, 100, 32, 32, "1", 0, 0);
 	scene.obstacles.push(building);
 
-
 	building = generateBuilding(164, 100, 32, 32, "2", 0, -32);
 	scene.obstacles.push(building);
-
 
 	scene.drawables.push.apply(scene.drawables, scene.obstacles);
 	scene.drawables.push(scene.player);
 
 }, function(elapsedMillis) {
-	// simulation
+	// simulatio n
 	this.player.vx *= 0.2;
 	this.player.vy *= 0.2;
 
