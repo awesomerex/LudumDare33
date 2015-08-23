@@ -24,6 +24,7 @@ function generateBuilding(x, y, width, height, buildingNumber, offsetx, offsety)
 	entity.sprite2 = sprite2;
 	entity.sprite3 = sprite3;
 	entity.state = 1;
+	
 	entity.hit = function (){
 		if(entity.state < 4){
 			entity.state ++;
@@ -42,27 +43,6 @@ function generateBuilding(x, y, width, height, buildingNumber, offsetx, offsety)
 		}
 	};
 
-  entity.destruction = function (theTimer) {
-      // function notVulnerable() {
-      //   entity.vulnerable = false;
-      // }
-
-      // function isVulnerable() {
-      //   entity.vulnerable= true;
-      // }
-      
-      if (entity.building === true && game.player.attacking) {
-        if (game.player.canhit) {
-          console.log("its vulnerable " + entity);
-          game.player.canhit = false;
-          this.hit();
-          theTimer.start();
-        }
-      }
-    };
-
-
-
 	return entity;
 }
 
@@ -77,10 +57,6 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
 
 
 	var fourWayRoad = game.animations.get("roadFourWay");
-game.leftArrow = game.animations.get("leftArrow");
-game.rightArrow = game.animations.get("rightArrow");
-game.upArrow = game.animations.get("upArrow");
-game.downArrow = game.animations.get("downArrow");
 game.playerTest =game.animations.get("playerTest");
 game.playerUp = game.animations.get("playerUp");
 game.playerDown = game.animations.get("playerDown");
@@ -92,6 +68,50 @@ game.playerRight = game.animations.get("playerRight");
 	scene.drawables = [];
 	scene.player = new Splat.AnimatedEntity(canvas.width/2, canvas.height/2, 32, 32, game.playerTest, 0, -32);
   scene.player.direction = "up"; 
+  scene.player.attack = function (objects, theTimer) {
+  		//create an entity in front of the player
+  		var x, y, width, height;
+  		switch(this.direction){
+  			case "up":
+  				x = this.x;
+  				y = this.y - 1;
+  				height = 1;
+  				width = 32;
+  				break;
+  			case "left":
+  				x = this.x - 1;
+  				y = this.y;
+  				height = 32;
+  				width = 1;
+  				break;
+  			case "right":
+  				x = this.x + this.width + 1;
+  				y = this.y;
+  				height = 32;
+  				width = 1;
+  				break;
+  			case "down":
+  				x = this.x;
+  				y = this.y + this.height + 1;
+  				height = 1;
+  				width = 32;
+  				break;
+  			case "default":
+  				console.log("whaht Didj ya doo?");
+  				break;
+  		}
+  		var entity = new Splat.Entity(x, y, width, height);
+  		for(var count = 0 ; count < objects.length; count++){
+  			if(entity.collides(objects[count]) && this.canhit){
+  				console.log("You hit something");
+  				this.canhit = false;
+  				objects[count].hit();
+  				theTimer.start();
+  			}
+  		}
+  		entity = null;
+  		console.log("attack created");
+  };
   scene.player.attacking = false;
   scene.player.canhit = true;
   game.player = scene.player;
@@ -153,7 +173,7 @@ game.playerRight = game.animations.get("playerRight");
 	this.player.vy *= 0.2;
 
   if (game.keyboard.isPressed("space")) {
-    this.attack();
+    this.player.attack(this.obstacles, this.timers.buildingHitTimer);
   } else {
     this.notAttack();
   }  
@@ -183,27 +203,23 @@ game.playerRight = game.animations.get("playerRight");
 	for (var x = 0; x < this.obstacles.length; x++){
     var obstacle = this.obstacles[x];
 
-		if(this.player.collides(obstacle)){
+			if(this.player.collides(obstacle)){
 			console.log("colliding");
 
 			if (obstacle.wasLeft(this.player)) {
 			  this.player.x = obstacle.x + obstacle.width;
-        obstacle.destruction(this.timers.buildingHitTimer);
-      }
+      		}
 
 			if (obstacle.wasRight(this.player)) {
 				this.player.x = obstacle.x - this.player.width;
-        obstacle.destruction(this.timers.buildingHitTimer);
 			}
       
 			if (obstacle.wasAbove(this.player)) {
 			  this.player.y = obstacle.y + obstacle.height;
-        obstacle.destruction(this.timers.buildingHitTimer);
       		}
 		  
       		if (obstacle.wasBelow(this.player)) {
 				this.player.y = obstacle.y - this.player.height;
-        obstacle.destruction(this.timers.buildingHitTimer);
 			}
 		}
 	} 
@@ -213,7 +229,7 @@ game.playerRight = game.animations.get("playerRight");
 	// draw
 	context.clearRect(this.camera.x, this.camera.y , canvas.width, canvas.height);
 	context.fillStyle = "#092227";
-	context.fillRect(0, 0, canvas.width, canvas.height);
+	context.fillRect(0, 0, 1024, 1024);
 
 	context.fillStyle = "#fff";
 	context.font = "25px helvetica";
