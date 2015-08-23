@@ -42,21 +42,6 @@ function generateBuilding(x, y, width, height, buildingNumber, offsetx, offsety)
 				break;
 		}
 	};
-
-<<<<<<< HEAD
-=======
-  entity.destruction = function (theTimer) {
-    if (entity.building === true && game.player.attacking) {
-      if (game.player.canhit) {
-        console.log("its vulnerable " + entity);
-        game.player.canhit = false;
-        this.hit();
-        theTimer.start();
-      }
-    }
-  };
-
->>>>>>> 9b1f6a3ce376f78705fac1c3bb668bff08d36d49
 	return entity;
 }
 
@@ -79,7 +64,7 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
 	scene.road = new Splat.AnimatedEntity(0,0, canvas.width, canvas.height, game.fourWayRoad, 0, 0);
 	scene.obstacles = [];
 	scene.drawables = [];
-	
+
 	scene.player = new Splat.AnimatedEntity(canvas.width/2, canvas.height/2, 32, 32, game.playerTest, 0, -32);
   scene.player.direction = "up"; 
   scene.player.attack = function (objects, theTimer) {
