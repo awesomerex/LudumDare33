@@ -65,20 +65,22 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
             var tile = cityMap[x][y];
 
             if (tile > 15 && tile < 20) { 
-                var height, number;
+                var height, number, offset;
                 
                 switch (tile) {
                     case 16 || 18:
                         height = 1;
                         number = 1;
+                        offset = -32;
                         break;
                     case 17 || 19: 
                         height = 2;
                         number = 2;
+                        offset = -64;
                         break;
                 }
 
-                var building = new generateBuilding(x * 32, y * 32, 32, 32, number, 0, height * -32); 
+                var building = new generateBuilding(x * 32, y * 32, 32, 32, number, 0, offset); 
 
                 scene.obstacles.push(building);
                
