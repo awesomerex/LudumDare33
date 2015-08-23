@@ -70,12 +70,12 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
                     case 16 || 18:
                         height = 1;
                         number = 1;
-                        offset = -32;
+                        offset = 0;
                         break;
                     case 17 || 19: 
                         height = 2;
                         number = 2;
-                        offset = -64;
+                        offset = -32;
                         break;
                 }
 
