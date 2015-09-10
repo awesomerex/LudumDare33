@@ -1,12 +1,17 @@
 {
 	"images": {
-    "city-tileset" : "assets/images/City_TileSet.png"
+    "intro-scene"  : "assets/images/yrtmTitlebg.jpg",
+    "city-tileset" : "assets/images/City_TileSet.png",
+    "play-button"  : "assets/images/play.png",
+    "credit-bg"    : "assets/images/credits.jpg"
 	},
 
 	"sounds": {
 		"gruntSmash" : "assets/sounds/smash-grunt.mp3",
 		"footstep1" : "assets/sounds/footstep1.mp3",
-		"footstep2" : "assets/sounds/footstep2.mp3"
+		"footstep2" : "assets/sounds/footstep2.mp3",
+    "buildingCrush" : "assets/sounds/crash_3.mp3",
+    "kick-shock" : "assets/sounds/Kick_Shock.mp3"
 	},
 
 	"fonts": {
@@ -90,25 +95,25 @@
     "playerPunchDown": {
       "strip": "assets/images/Hero_Punch_Down.png",
       "frames": 4,
-      "msPerFrame": 400
+      "msPerFrame": 150
     },
 
     "playerPunchUp": {
       "strip": "assets/images/Hero_Up_Punch.png",
       "frames": 4,
-      "msPerFrame": 400
+      "msPerFrame": 150
     },
 
     "playerPunchLeft": {
       "strip": "assets/images/Hero_Side_Punch.png",
       "frames": 4,
-      "msPerFrame": 400
+      "msPerFrame": 150
     },
 
     "playerPunchRight": {
       "strip": "assets/images/Hero_Side_Punch.png",
       "frames": 4,
-      "msPerFrame": 400,
+      "msPerFrame": 150,
       "flip": "horizontal"
     }
   }

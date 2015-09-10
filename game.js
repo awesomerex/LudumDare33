@@ -5,10 +5,17 @@ var canvas = document.getElementById("canvas");
 var gameMaker = require("./game_maker.js");
 var game = gameMaker.game;
 
+function leftText(context, text, offsetX, offsetY) {
+  //var w = context.measureText(text).width;
+  var x = offsetX + 0;
+  var y = offsetY | 0;
+  context.fillText(text, x, y);
+}
+
 // var manifest = require("./manifest.json");
 // var game = new Splat.Game(canvas, manifest);
 
-// function centerText(context, text, offsetX, offsetY) {
+// function leftText(context, text, offsetX, offsetY) {
 // 	var w = context.measureText(text).width;
 // 	var x = offsetX + (canvas.width / 2) - (w / 2) | 0;
 // 	var y = offsetY | 0;
@@ -27,13 +34,12 @@ function generateBuilding(x, y, width, height, buildingNumber, offsetx, offsety)
 	entity.sprite2 = sprite2;
 	entity.sprite3 = sprite3;
 	entity.state = 1;
-	
-	entity.hit = function (){
-		if(entity.state < 4){
-			entity.state ++;
-			console.log("hit");
+
+	entity.hit = function (){  
+    console.log(this.state);  
+		if(this.state < 4){
+			this.state ++;			
             game.score++;
-			//destruction sound
 		}
 		switch (entity.state){
 			case 1:
@@ -41,9 +47,11 @@ function generateBuilding(x, y, width, height, buildingNumber, offsetx, offsety)
 				break;
 			case 2:
 				entity.sprite = entity.sprite2;
+        game.sounds.play("buildingCrush");
 				break;
 			case 3:
 				entity.sprite = entity.sprite3;
+        game.sounds.play("buildingCrush");
 				break;
 		}
 	};
@@ -51,7 +59,7 @@ function generateBuilding(x, y, width, height, buildingNumber, offsetx, offsety)
 }
 
 
-game.scenes.add("title", new Splat.Scene(canvas, function() {
+game.scenes.add("game", new Splat.Scene(canvas, function() {
 	// initialization
 	var scene = this;
 	scene.obstacles = [];
@@ -81,6 +89,7 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
                 }
 
                 var building = new generateBuilding(x * 32, y * 32, 32, 32, number, 0, offset); 
+                building.state = 1;
 
                 scene.obstacles.push(building);
                
@@ -141,13 +150,36 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
 	//timer for building destruction cooldown
 	scene.timers.buildingHitTimer = new Splat.Timer(undefined, 1000, function(){
 		scene.player.canhit = true;
-		console.log("player can hit");
 	});
 
 	//timer for time limit
-	scene.timers.timeLimit = new Splat.Timer(function(){
-		//update a timer lable
-	}, 30000, undefined);
+	scene.timers.timeLimit = new Splat.Timer( undefined, 1000, function(){
+    scene.decrementSecond();
+    this.reset();
+    this.start();
+  });
+  scene.timers.timeLimit.start();
+
+  scene.decrementSecond = function(){
+    var min = game.time.minute;
+    var second1 = game.time.second1;
+    var second2 = game.time.second2;
+
+    second2 --;
+
+    if (second2 < 0){
+      second1 --;
+      second2 = 9;
+    }
+    if (second1 < 0){
+      min --;
+      second1 = 5;
+    }
+    game.time.minute = min;
+    game.time.second1 = second1;
+    game.time.second2 = second2;
+  };
+
 
 	//timer for walking sounds
 	scene.timers.playWalkSound = new Splat.Timer(undefined, 400, function(){
@@ -155,6 +187,10 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
 		this.start();
 		game.sounds.play("footstep1");
 	});
+  game.time = {};
+  game.time.minute = 3;
+  game.time.second1 = 0;
+  game.time.second2 = 0;
 	game.isWalkSoundTimerRunning = false;
   game.playerUp = game.animations.get("playerUp");
   game.playerDown = game.animations.get("playerDown");
@@ -165,16 +201,16 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
   game.playerPunchLeft = game.animations.get("playerPunchLeft");
   game.playerPunchRight = game.animations.get("playerPunchRight");
   game.tilesheet = game.images.get("city-tileset");
+  game.sounds.play("kick-shock", true);
   game.score = 0;
 
-  scene.player = new Splat.AnimatedEntity(512, 512, 32, 32, game.playerDown, 0, -32);
+  scene.player = new Splat.AnimatedEntity(672, 672, 32, 32, game.playerDown, 0, -32);
   scene.player.direction = "down"; 
   scene.player.isMoving = false;
   scene.player.attack = function (objects, theTimer) {
   		//create an entity in front of the player
   		var x, y, width, height;
   		this.attacking = true;
-  		console.log("attacking");
   		switch(this.direction){
   			case "up":
   				x = this.x;
@@ -204,21 +240,19 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
   				width = 32;
   				scene.player.sprite = game.playerPunchDown;
   				break;
-  			case "default":
-  				console.log("whaht Didj ya doo?");
+  			case "default":  				
   				break;
   		}
   		var entity = new Splat.Entity(x, y, width, height);
   		for(var count = 0 ; count < objects.length; count++){
-  			if(entity.collides(objects[count]) && this.canhit){
-  				console.log("You hit something");
+  			if(entity.collides(objects[count]) && this.canhit){  				
   				this.canhit = false;
   				objects[count].hit();
+          theTimer.reset();
   				theTimer.start();
   			}
   		}
-  		entity = null;
-  		console.log("attack created");
+  		entity = null;  		
   };
 
   scene.player.attacking = false;
@@ -257,30 +291,32 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
 
 }, function(elapsedMillis) {
 	// simulation
+  //End condition
+  if(game.time.minute === 0 && game.time.second1 === 0 && game.time.second2 === 0){
+      game.sounds.stop("kick-shock");
+      game.scenes.switchTo("credits");
+  }
+
 	//while player is moving run the footstep timer
 	if(this.player.vx !== 0 || this.player.vy !== 0){
-		console.log("moving");
 		this.player.isMoving = true;
 	}else{
 		this.player.isMoving = false;
 	}
 
 	if (this.player.isMoving && game.isWalkSoundTimerRunning === false){
-		game.isWalkSoundTimerRunning = true;
-		console.log("starting walk time");
+		game.isWalkSoundTimerRunning = true;		
 		this.timers.playWalkSound.start();
 	}
 	if( game.isWalkSoundTimerRunning === true && this.player.isMoving === false){
-		game.isWalkSoundTimerRunning = false;
-		console.log("stopping walk time");
+		game.isWalkSoundTimerRunning = false;		
 		this.timers.playWalkSound.stop();
 	}
 
 	this.player.vx = 0;
 	this.player.vy = 0;
 
-  if (game.keyboard.isPressed("space")) {
-  	console.log("attack");
+  if (game.keyboard.isPressed("space")) {  	
     this.player.attack(this.obstacles, this.timers.buildingHitTimer);
   } else {
     this.notAttack();
@@ -309,26 +345,25 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
 	this.player.move(elapsedMillis);
 	
 	//set player boundaries
-	if(this.player.x < 0){
-		this.player.x = 0;
+	if(this.player.x < 128){
+		this.player.x = 128;
 	}
-	if(this.player.y < 0){
-		this.player.y = 0;
+	if(this.player.y < 128){
+		this.player.y = 128;
 	}
-	if(this.player.x > 1024 - this.player.width){
-		this.player.x = 1024 - this.player.width;
+	if(this.player.x > 1152 - this.player.width){
+		this.player.x = 1152 - this.player.width;
 	}
 
-	if(this.player.y > 1024 - this.player.height){
-		this.player.y = 1024 - this.player.height;
+	if(this.player.y > 1152 - this.player.height){
+		this.player.y = 1152 - this.player.height;
 	}
 
 	//collision detection
 	for (var x = 0; x < this.obstacles.length; x++){
     var obstacle = this.obstacles[x];
 
-			if(this.player.collides(obstacle)){
-			console.log("colliding");
+			if(this.player.collides(obstacle)){			
 
 			if (obstacle.wasLeft(this.player)) {
 			  this.player.x = obstacle.x + obstacle.width;
@@ -347,7 +382,6 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
 			}
 		}
 	} 
-	
 
 }, function(context) {
 	// draw
@@ -357,7 +391,7 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
 	context.fillStyle = "#092227";
 	context.fillRect(0, 0, 1024, 1024);
 
-	context.fillStyle = "#fff";
+	context.fillStyle = "#000";
 	context.font = "25px helvetica";
 	this.drawables.sort(function(a,b){return a.y - b.y;});
 
@@ -369,23 +403,80 @@ game.scenes.add("title", new Splat.Scene(canvas, function() {
 		this.drawables[x].draw(context);
 	}
     
-    function drawScore() {
-        var x = game.camera.screenCenterX;
-        var y = game.camera.screenCenterY; 
-        var ctx = document.getElementById("canvas").getContext("2d");
-        ctx.font = "48px serif";
-        ctx.fillText(scoreText, x, y - 150);
-    }
 
-    drawScore();
+    context.font = "48px serif";
+    context.fillText (scoreText, this.camera.x + this.camera.width, this.camera.y + 36);
+
+    context.fillText ( game.time.minute + ":" + game.time.second1 + game.time.second2 , this.camera.x + 500, this.camera.y + 36);
+
+
+
 }));
 
-game.scenes.add("credits",new Splat.Scene(canvas, function() {
+game.scenes.add("title",new Splat.Scene(canvas, function() {
 	//initialization
+  var scene = this;
+  scene.bgimage = game.images.get("intro-scene");
+  scene.playbutton = game.images.get("play-button");
+  scene.background = new Splat.Entity(0,0, canvas.width, canvas.height);
+  scene.background.draw = function (context) {
+        context.drawImage(scene.bgimage, 0, 0);
+  };
+
+  scene.button = new Splat.Entity(141, 270, 109, 58);
+  scene.button.draw = function (context) {
+      context.drawImage(scene.playbutton, this.x, this.y);
+  };
+
 },function(){
 	//simulation
-},function(){
+  //on left mouse click check if the click was on the entity
+  if (game.mouse.consumePressed(0)){
+    game.scenes.switchTo("game");
+  }
+
+},function(context){
 	//draw
+  this.background.draw(context);
+  this.button.draw(context);
+}));
+
+game.scenes.add("credits", new Splat.Scene(canvas, function() {
+    // initialization
+    var scene = this;
+    scene.background = new Splat.Entity(0,0, canvas.width, canvas.height);
+    scene.background.draw = function (context) {
+       context.drawImage(scene.bgimage, this.x, this.y);
+    };
+    scene.bgimage = game.images.get("credit-bg");
+
+}, function() {
+    // simulation
+    if (game.mouse.consumePressed(0)){
+    game.scenes.switchTo("title");
+  }
+}, function(context) {
+    // draw
+     var scoreText = "Your Score: " + game.score; 
+
+    this.background.draw(context);
+
+    context.fillStyle = "#000";
+    context.font = "20px helvetica";
+    leftText(context, scoreText, 300, 20);
+    leftText(context, "Programed by:", 0, 100);
+    leftText(context, "Clay (badass) Morton", 0, 25 + 25);
+    leftText(context, "Rex Soriano", 0, 25 + 50);
+    leftText(context, "Graphics and Level Design by:", 0, 25 + 100);
+    leftText(context, "Frank (mofo) Moussette", 0, 25 + 125);
+
+    leftText(context, "Title Screen Graphics by:", 0, 25 + 175);
+    leftText(context, "Tiffani Stuart", 0, 25 + 200);
+    leftText(context, "Created using Splatjs", 0, 100 + 250);
+
+    leftText(context, "Music:", 0, 25 + 225);
+    leftText(context, "Kick Shock - Kevin MacLeod (incompetech.com) :", 0, 25 + 250);
+    
 }));
 
 game.scenes.switchTo("loading");
